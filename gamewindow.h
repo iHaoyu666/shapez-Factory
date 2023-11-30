@@ -5,7 +5,6 @@
 #include <QPainter>         //画家类
 #include <QMouseEvent>      //鼠标事件
 #include "toolselection.h" //选择框
-#include <QRect>
 class gamewindow : public QWidget
 {
     Q_OBJECT
@@ -17,8 +16,6 @@ public:
     void drawToolSelection(QPainter&); //画出选择框
     void wheelEvent(QWheelEvent* event);
     void paintEvent(QPaintEvent* event); //绘画事件
-private:
-    int scaleRatio;
 };
 
 #endif // GAMEWINDOW_H
