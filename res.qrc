@@ -2,6 +2,11 @@
     <qresource prefix="/">
         <file>res/background1.jpg</file>
         <file>res/grid.png</file>
+        <file>res/pic/buildings/3.png</file>
+        <file>res/pic/buildings/3-0.png</file>
+        <file>res/pic/buildings/0.png</file>
+        <file>res/pic/buildings/1.png</file>
+        <file>res/pic/buildings/2.png</file>
+        <file>res/pic/buildings/4.png</file>
     </qresource>
-    <qresource prefix="/new/prefix1"/>
 </RCC>

@@ -19,3 +19,4 @@ public:
 };
 
 #endif // GAMEWINDOW_H
+//TODO：缩放效果 学习QGraphic 实现半透明选择框在下方 实现绘制 工具大小的指定
