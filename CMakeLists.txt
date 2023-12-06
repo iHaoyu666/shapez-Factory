@@ -48,6 +48,11 @@ else()
             toolselection.h toolselection.cpp
             enhancementhub.h enhancementhub.cpp
             res.qrc
+            tool.h tool.cpp
+            cuttertool.h cuttertool.cpp
+            extractortool.h extractortool.cpp
+            trashtool.h trashtool.cpp
+            translatortool.h translatortool.cpp
 
 
         )

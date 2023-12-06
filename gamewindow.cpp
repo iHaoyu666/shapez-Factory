@@ -1,5 +1,10 @@
 #include "gamewindow.h"
 #include "config.h"
+#include "cuttertool.h"
+#include "extractortool.h"
+#include "trashtool.h"
+#include "translatortool.h"
+
 gamewindow::gamewindow(QWidget *parent)
     : QWidget(parent)
 {
@@ -59,9 +64,9 @@ void gamewindow::drawToolSelection(QPainter& painter){
 
     // 加载工具图片
     QPixmap ConveyorPixmap(":/res/pic/buildings/0.png");
-    QPixmap TrashPixmap(":/res/pic/buildings/1.png");
-    QPixmap CutterPixmap(":/res/pic/buildings/2.png");
-    QPixmap ExcavatorPixmap(":/res/pic/buildings/4.png");
+    QPixmap CutterPixmap(":/res/pic/buildings/1.png");
+    QPixmap ExcavatorPixmap(":/res/pic/buildings/2.png");
+    QPixmap TrashPixmap(":/res/pic/buildings/4.png");
 
     QColor toolbarColor(128, 128, 128, 128);
     // 绘制工具栏背景
@@ -75,13 +80,13 @@ void gamewindow::drawToolSelection(QPainter& painter){
 
     QPoint tool0Pos(toolbarX + (toolbarWidth - toolSize * 4 - toolSpacing * 3) / 2, toolbarY + (toolbarHeight - toolSize) / 2);
     QPoint tool1Pos = tool0Pos + QPoint(toolSize + toolSpacing, 0);
-    QPoint tool2Pos = tool1Pos + QPoint(toolSize + toolSpacing, 0);
+    QPoint tool2Pos = tool1Pos + QPoint(toolSize * 2 + toolSpacing, 0);
     QPoint tool3Pos = tool2Pos + QPoint(toolSize + toolSpacing, 0);
 
     painter.drawPixmap(tool0Pos, ConveyorPixmap.scaled(toolSize, toolSize, Qt::KeepAspectRatio));
-    painter.drawPixmap(tool1Pos, TrashPixmap.scaled(toolSize, toolSize, Qt::KeepAspectRatio));
-    painter.drawPixmap(tool2Pos, CutterPixmap.scaled(toolSize, toolSize, Qt::KeepAspectRatio));
-    painter.drawPixmap(tool3Pos, ExcavatorPixmap.scaled(toolSize, toolSize, Qt::KeepAspectRatio));//TODO 改剪刀的大小
+    painter.drawPixmap(tool1Pos, CutterPixmap.scaled(toolSize * 2, toolSize, Qt::KeepAspectRatio));
+    painter.drawPixmap(tool2Pos, ExcavatorPixmap.scaled(toolSize, toolSize, Qt::KeepAspectRatio));
+    painter.drawPixmap(tool3Pos, TrashPixmap.scaled(toolSize, toolSize, Qt::KeepAspectRatio));
 }
 
 void gamewindow::wheelEvent(QWheelEvent* event){
