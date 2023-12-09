@@ -53,6 +53,8 @@ else()
             extractortool.h extractortool.cpp
             trashtool.h trashtool.cpp
             translatortool.h translatortool.cpp
+            map.h map.cpp
+            resource.h resource.cpp
 
 
         )

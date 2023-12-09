@@ -8,5 +8,9 @@
         <file>res/pic/buildings/1.png</file>
         <file>res/pic/buildings/2.png</file>
         <file>res/pic/buildings/4.png</file>
+        <file>res/pic/buildings/0-1.png</file>
+        <file>res/pic/buildings/0-2.png</file>
+        <file>res/pic/pieces/0.png</file>
+        <file>res/pic/pieces/2-0.png</file>
     </qresource>
 </RCC>

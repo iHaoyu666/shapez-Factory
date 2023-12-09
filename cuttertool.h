@@ -1,11 +1,13 @@
 #ifndef CUTTERTOOL_H
 #define CUTTERTOOL_H
-
-
-class cutterTool
+#include "tool.h"
+#include <QKeyEvent>
+class cutterTool: public Tool
 {
+    QPoint rubbishPos;
 public:
-    cutterTool();
+    cutterTool(int x, int y, int rotation): Tool(ToolType::Cutter, x, y, rotation) {}
+    void draw(QPainter& painter) ;
 };
 
 #endif // CUTTERTOOL_H
