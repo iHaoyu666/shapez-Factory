@@ -6,8 +6,8 @@
 #define GAME_TITLE "Shapez Factory" //标题
 #define START_WIDTH 1024   //主菜单宽度
 #define START_HEIGHT 1024   //主菜单高度
-#define mapWidth 10    // 地图的宽度（格子数）
-#define mapHeight 10 // 地图的高度（格子数）
+#define mapWidth  26   // 地图的宽度（格子数）
+#define mapHeight 16 // 地图的高度（格子数）
 #define GRID_SIZE 75 //格子宽度
 
 #endif // CONFIG_H

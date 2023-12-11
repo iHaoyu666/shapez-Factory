@@ -7,7 +7,9 @@
 #include <QMouseEvent>      //鼠标事件
 #include "toolselection.h" //选择框
 #include "resource.h"
-
+#include <windows.h>
+#include <QDebug>
+#include "config.h"
 class gamewindow : public QWidget
 {
     Q_OBJECT
@@ -16,24 +18,27 @@ public:
     void drawMap(QPainter&);            //画出地图
     void drawToolSelection(QPainter&); //画出选择框
     void paintEvent(QPaintEvent* event) override; //绘画事件
-
+//    bool eventFilter(QObject* obj, QEvent* event) override;
     void addTool(Tool* tool);  // 添加工具
     void removeTool(int x, int y);  // 移除工具
     bool hasTool(int x, int y) const;  // 检查是否存在工具
     QTimer *refreshTimer;
-
+    QTimer* keyCheckTimer;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void removeTool(const QPoint& position);  // 移除工具
-
+    void checkRKeyPressed();
     void handleKeyPressEvent(QKeyEvent* event);
 private:
+    bool isRKeyPressed=false;
+    bool isMousePressed = false;
     std::vector<resource> resources;
     std::vector<Tool*> tools;
     double conveyorRate;//传送带速率
     Tool* selectedTool = nullptr;  // 选中的工具
     QPoint selectedToolOffset;
+    int Map[mapWidth][mapHeight]={0};
 };
 
 #endif // GAMEWINDOW_H

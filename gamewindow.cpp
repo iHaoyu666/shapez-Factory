@@ -25,11 +25,11 @@ gamewindow::gamewindow(QWidget *parent)
     setFixedSize(GAME_WIDTH,GAME_HEIGHT);
     setWindowTitle(GAME_TITLE);
 
-
     QPainter painter(this);
+    setMouseTracking(true);
     refreshTimer = new QTimer(this);
     connect(refreshTimer, &QTimer::timeout, this, QOverload<>::of(&gamewindow::update));
-    refreshTimer->start(50);  // 设置刷新间隔，单位为毫秒
+    refreshTimer->start(10);  // 设置刷新间隔，单位为毫秒
 }
 
 void gamewindow::paintEvent(QPaintEvent* event) {
@@ -37,40 +37,18 @@ void gamewindow::paintEvent(QPaintEvent* event) {
     QPainter painter(this);
     drawMap(painter);
     drawToolSelection(painter);
-
+    if (GetKeyState('R')<0&&isMousePressed) {
+        selectedTool->rotate(90);
+    }
     for (const auto& tool : tools){
         tool->draw(painter);
+
     }
 
 
 
     if (selectedTool) {
-        QPoint cursorPos = mapFromGlobal(QCursor::pos());
-        QPoint toolPos = cursorPos-selectedToolOffset;
-        QPixmap selectedPixmap;
-
-        QPixmap ConveyorPixmap(":/res/pic/buildings/0.png");
-        QPixmap CutterPixmap(":/res/pic/buildings/1.png");
-        QPixmap ExcavatorPixmap(":/res/pic/buildings/2.png");
-        QPixmap GarbageCanPixmap(":/res/pic/buildings/4.png");
-
-        // 根据选中工具的类型，设置对应的选中工具图片
-        switch (selectedTool->getType()) {
-        case ToolType::Conveyor:
-            selectedPixmap = ConveyorPixmap.scaled(GRID_SIZE, GRID_SIZE, Qt::KeepAspectRatio);
-            break;
-        case ToolType::Cutter:
-            selectedPixmap = CutterPixmap.scaled(GRID_SIZE * 2, GRID_SIZE, Qt::KeepAspectRatio);
-            break;
-        case ToolType::Excavator:
-            selectedPixmap = ExcavatorPixmap.scaled(GRID_SIZE, GRID_SIZE, Qt::KeepAspectRatio);
-            break;
-        case ToolType::GarbageCan:
-            selectedPixmap = GarbageCanPixmap.scaled(GRID_SIZE, GRID_SIZE, Qt::KeepAspectRatio);
-            break;
-        }
-
-        painter.drawPixmap(toolPos, selectedPixmap);
+        selectedTool->draw(painter);
     }
     painter.end();
 }
@@ -201,8 +179,9 @@ void gamewindow::mousePressEvent(QMouseEvent *event) {
             }
             if (selectedTool) {
                 selectedToolOffset=QPoint(0.5*GRID_SIZE, 0.5*GRID_SIZE);
+                isMousePressed=true;
+                }
         }
-    }
     }
 }
 void gamewindow::mouseMoveEvent(QMouseEvent *event) {
@@ -212,7 +191,8 @@ void gamewindow::mouseMoveEvent(QMouseEvent *event) {
 
         // 更新选中工具的位置
         selectedTool->getPosition() = QPoint(mouseX, mouseY);
-        update();
+        selectedTool->setGridPos(mouseX,mouseY);
+//        update();
     }
 }
 
@@ -228,7 +208,7 @@ void gamewindow::mouseReleaseEvent(QMouseEvent *event) {
         } else {
             delete selectedTool;  // 释放内存
         }
-
+        isMousePressed=false;
         selectedTool = nullptr;
         update();  // 重新绘制界面
     }
