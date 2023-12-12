@@ -27,12 +27,14 @@ public:
     bool hasTool(int x, int y) const;  // 检查是否存在工具
     QTimer *refreshTimer;
     QTimer* keyCheckTimer;
+    QTimer* generateTimer;
     QLabel* moneyLable = new QLabel(this);
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void removeTool(const QPoint& position);  // 移除工具
     void checkRKeyPressed();
+    void generateResource(int kind, int x, int y, int angle);
 private:
     // 上一次旋转的时间戳
     QDateTime lastRotationTime;
@@ -43,8 +45,9 @@ private:
 
     bool isRKeyPressed=false;
     bool isMousePressed = false;
-    std::vector<resource> resources;
+    std::vector<resource*> resources;
     std::vector<Tool*> tools;
+    QVector<std::tuple<QPoint, int, int>> miningElements;
     double conveyorRate;//传送带速率
     Tool* selectedTool = nullptr;  // 选中的工具
     QPoint selectedToolOffset;
@@ -71,9 +74,8 @@ private:
 //        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 
 //    };
-
 signals:
-    void resourceBeingExcavated(int x, int y, int angle);
+    void resourceBeingExcavated(int kind, int x, int y, int angle);
 };
 
 #endif // GAMEWINDOW_H

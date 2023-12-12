@@ -9,5 +9,5 @@
 #define mapWidth  38   // 地图的宽度（格子数）
 #define mapHeight 24 // 地图的高度（格子数）
 #define GRID_SIZE 50 //格子宽度
-
+#define MOVERATE 5 //传送带速度
 #endif // CONFIG_H

@@ -25,11 +25,29 @@ gamewindow::gamewindow(QWidget *parent)
     setFixedSize(GAME_WIDTH,GAME_HEIGHT);
     setWindowTitle(GAME_TITLE);
     setMouseTracking(true);
-
+    connect(this, &gamewindow::resourceBeingExcavated, this,[&](int kind, int x, int y, int angle) {
+        miningElements.append(std::make_tuple(QPoint(x, y), kind, angle));
+    });
     QPainter painter(this);
 
     refreshTimer = new QTimer(this);
+    connect(refreshTimer, &QTimer::timeout, this, [&]{
+        for (const auto& element : qAsConst(miningElements)) {
+            // 获取位置、种类和方向信息
+            QPoint position = std::get<0>(element);
+            int kind = std::get<1>(element);
+            int angle = std::get<2>(element);
+
+
+            // 在指定位置生成新的Resource类
+            resource* newResource = new resource(kind, position.x(), position.y(), angle);
+
+            // 将新资源添加到资源列表
+            resources.push_back(newResource);
+        }
+    });
     connect(refreshTimer, &QTimer::timeout, this, QOverload<>::of(&gamewindow::update));
+
     refreshTimer->start(10);  // 设置刷新间隔，单位为毫秒
 
     //金钱标签
@@ -84,12 +102,27 @@ void gamewindow::paintEvent(QPaintEvent* event) {
     for (const auto& tool : tools){
         tool->draw(painter);
     }
-
+    for (auto resource: resources){
+        resource->moveWithConveyor();
+        resource->draw(painter);
+    }
     if (selectedTool) {
         selectedTool->draw(painter);
     }
     painter.end();
 }
+void gamewindow::generateResource(int kind, int x, int y, int angle) {
+    // 在资源区域生成新的Resource实例
+    connect(refreshTimer, &QTimer::timeout, this, [this, kind, x, y, angle]() {
+        // 在指定位置生成新的Resource类
+        resource* newResource = new resource(kind, x, y, angle);
+        // 将新资源添加到资源列表
+        resources.push_back(newResource);
+    });
+
+    // 将新资源添加到资源列表
+    }
+
 //void addCornerConveyor(const std::vector<std::pair<int, int>>& path, int cornerX, int cornerY) {
 //    // 根据拐点的坐标和路径中的前一个格子坐标判断拐弯的方向
 //    int prevX = path.back().first;
@@ -236,9 +269,11 @@ void gamewindow::addTool(Tool* tool, int x, int y) {
     case ToolType::Excavator:
         if (Map[y/GRID_SIZE][x/GRID_SIZE]==-1){
             Map[y/GRID_SIZE][x/GRID_SIZE]=-3;
+            emit resourceBeingExcavated(1, x, y, tool->getRotation());
         }
         else if (Map[y/GRID_SIZE][x/GRID_SIZE]==-2){
             Map[y/GRID_SIZE][x/GRID_SIZE]=-4;
+            emit resourceBeingExcavated(2, x, y, tool->getRotation());
         }
         else{
         Map[y/GRID_SIZE][x/GRID_SIZE]=2;
