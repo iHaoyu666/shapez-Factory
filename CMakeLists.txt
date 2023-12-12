@@ -43,9 +43,9 @@ else()
     else()
         add_executable(shapez_oi_njucpp
             ${PROJECT_SOURCES}
-            config.h
+
             gamewindow.h gamewindow.cpp
-            toolselection.h toolselection.cpp
+
             enhancementhub.h enhancementhub.cpp
             res.qrc
             tool.h tool.cpp
@@ -55,6 +55,9 @@ else()
             translatortool.h translatortool.cpp
             map.h map.cpp
             resource.h resource.cpp
+            config.h
+            global.h global.cpp
+
 
 
         )

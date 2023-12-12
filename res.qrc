@@ -10,7 +10,10 @@
         <file>res/pic/buildings/4.png</file>
         <file>res/pic/buildings/0-1.png</file>
         <file>res/pic/buildings/0-2.png</file>
-        <file>res/pic/pieces/0.png</file>
-        <file>res/pic/pieces/2-0.png</file>
+        <file>res/pic/pieces/resource1.png</file>
+        <file>res/pic/pieces/resource2.png</file>
+        <file>res/pic/pieces/1-0.png</file>
+        <file>res/pic/pieces/2-2.png</file>
+        <file>res/pic/buildings/0-3.png</file>
     </qresource>
 </RCC>
