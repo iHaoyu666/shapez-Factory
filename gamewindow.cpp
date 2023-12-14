@@ -56,11 +56,12 @@ gamewindow::gamewindow(QWidget *parent)
     //金钱标签
     moneyLable->move(20, 40);
     moneyLable->setFont(QFont("黑体", 20));
-    moneyLable->setText(QString("金钱：%1").arg(money));
+
     //交付数量标签
     centerLable->move(GAME_WIDTH/2-GRID_SIZE, GAME_HEIGHT/2-GRID_SIZE);
     centerLable->setFont(QFont("黑体", 8));
-    centerLable->setText(QString("已交付数量：%1").arg(money));
+    moneyLable->setText(QString("金钱：%1").arg(money));
+    centerLable->setText(QString("已交付数量：%1").arg(donePieces));
 }
 
 void gamewindow::paintEvent(QPaintEvent* event) {
@@ -69,6 +70,8 @@ void gamewindow::paintEvent(QPaintEvent* event) {
     drawMap(painter);
     drawToolSelection(painter);
     drawresource(painter);
+    moneyLable->setText(QString("金钱：%1").arg(money));
+    centerLable->setText(QString("已交付数量：%1").arg(donePieces));
     if (GetKeyState('R')<0&&isMousePressed) {
         QDateTime currentTime = QDateTime::currentDateTime();
         if (lastRotationTime.isNull() || lastRotationTime.msecsTo(currentTime) >= rotationInterval) {
@@ -112,6 +115,11 @@ void gamewindow::paintEvent(QPaintEvent* event) {
     }
     for (auto resource: resources){
         resource->moveWithConveyor();
+        if(resource->state==0){
+            removeresource(resource);
+            delete resource;
+            continue;
+        }
         resource->draw(painter);
     }
     if (selectedTool) {
@@ -305,7 +313,7 @@ void gamewindow::addTool(Tool* tool, int x, int y) {
         if(tool->getRotation()==180){
             Map[y/GRID_SIZE][x/GRID_SIZE-1]=5;
         }
-        if(tool->getRotation()==0){
+        if(tool->getRotation()==270){
             Map[y/GRID_SIZE-1][x/GRID_SIZE]=5;
         }
         break;
@@ -318,11 +326,26 @@ void gamewindow::removeTool(int x, int y) {
     for (auto it = tools.begin(); it != tools.end(); ++it) {
         Tool* tool = *it;
         if (QPoint(tool->getPosition().x()/GRID_SIZE, tool->getPosition().y()/GRID_SIZE) == QPoint(x/GRID_SIZE, y/GRID_SIZE)) {
+            if(tool->getType()!=ToolType::Excavator)
+            {
+                Map[y/GRID_SIZE][x/GRID_SIZE]=0;
+            }
+            else{
+                Map[y/GRID_SIZE][x/GRID_SIZE]=Map[y/GRID_SIZE][x/GRID_SIZE]*(-1);
+            }
             tools.erase(it);
             delete tool;  // 释放内存
             // 根据位置，执行相应操作
             break;
         }
+    }
+}
+void gamewindow::removeresource(resource* res){
+    auto it = std::find(resources.begin(), resources.end(), res);
+
+    // 如果找到了指针，则删除它
+    if (it != resources.end()) {
+        resources.erase(it);
     }
 }
 bool gamewindow::hasTool(int x, int y) const {
@@ -391,7 +414,7 @@ void gamewindow::mouseReleaseEvent(QMouseEvent *event) {
         int mouseY = event->y();
 
         // 判断是否在界面内松开鼠标
-        if (!hasTool(mouseX, mouseY)&&(mouseY < toolbarY || mouseY > toolbarY + toolbarHeight ||mouseX<toolbarX ||mouseX>toolbarX+toolbarWidth)) {
+        if (!hasTool(mouseX, mouseY)&&(mouseY < toolbarY || mouseY > toolbarY + toolbarHeight ||mouseX<toolbarX ||mouseX>toolbarX+toolbarWidth)&&Map[mouseY/GRID_SIZE][mouseX/GRID_SIZE]!=-5) {
             // 添加工具到界面和tools向量中
             addTool(selectedTool, mouseX, mouseY);
 

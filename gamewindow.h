@@ -34,6 +34,7 @@ public:
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void removeTool(const QPoint& position);  // 移除工具
+    void removeresource(resource* res);
     void checkRKeyPressed();
     void generateResource(int kind, int x, int y, int angle);
 private:
