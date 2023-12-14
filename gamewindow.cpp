@@ -7,6 +7,7 @@
 #include "translatortool.h"
 #include "map.h"
 #include <QTimer>
+#include <QDebug>
 #define MouClickRegion(X, Y, Width, Height)     \
 (ev->x() >= (X) && ev->x() <= (X) + (Width) &&  \
 ev->y() >= (Y) && ev->y() <= (Y) + (Height))
@@ -25,13 +26,14 @@ gamewindow::gamewindow(QWidget *parent)
     setFixedSize(GAME_WIDTH,GAME_HEIGHT);
     setWindowTitle(GAME_TITLE);
     setMouseTracking(true);
-    connect(this, &gamewindow::resourceBeingExcavated, this,[&](int kind, int x, int y, int angle) {
-        miningElements.append(std::make_tuple(QPoint(x, y), kind, angle));
-    });
+//    connect(this, &gamewindow::resourceBeingExcavated, this,[&](int kind, int x, int y, int angle) {
+//        miningElements.push_back(std::make_tuple(QPoint(x, y), kind, angle));
+//    });
     QPainter painter(this);
 
     refreshTimer = new QTimer(this);
-    connect(refreshTimer, &QTimer::timeout, this, [&]{
+    generateTimer= new QTimer(this);
+    connect(generateTimer, &QTimer::timeout, this, [&]{
         for (const auto& element : qAsConst(miningElements)) {
             // 获取位置、种类和方向信息
             QPoint position = std::get<0>(element);
@@ -41,19 +43,24 @@ gamewindow::gamewindow(QWidget *parent)
 
             // 在指定位置生成新的Resource类
             resource* newResource = new resource(kind, position.x(), position.y(), angle);
-
+            qDebug()<<"新资源生成";
             // 将新资源添加到资源列表
             resources.push_back(newResource);
         }
     });
-    connect(refreshTimer, &QTimer::timeout, this, QOverload<>::of(&gamewindow::update));
 
-    refreshTimer->start(10);  // 设置刷新间隔，单位为毫秒
+    connect(refreshTimer, &QTimer::timeout, this, QOverload<>::of(&gamewindow::update));
+    generateTimer->start(5000);//生成资源速度
+    refreshTimer->start(50);  // 设置刷新间隔，单位为毫秒
 
     //金钱标签
     moneyLable->move(20, 40);
     moneyLable->setFont(QFont("黑体", 20));
     moneyLable->setText(QString("金钱：%1").arg(money));
+    //交付数量标签
+    centerLable->move(GAME_WIDTH/2-GRID_SIZE, GAME_HEIGHT/2-GRID_SIZE);
+    centerLable->setFont(QFont("黑体", 8));
+    centerLable->setText(QString("已交付数量：%1").arg(money));
 }
 
 void gamewindow::paintEvent(QPaintEvent* event) {
@@ -69,6 +76,7 @@ void gamewindow::paintEvent(QPaintEvent* event) {
             lastRotationTime = currentTime;
         }
     }
+
 //    if (GetKeyState('ctrl') < 0 && isMousePressed&& selectedTool->getType()==ToolType::Conveyor){
 //        std::vector<std::pair<int, int>> path; // 保存经过的格子坐标
 //        QPoint mousePos = mapFromGlobal(QCursor::pos());
@@ -269,11 +277,15 @@ void gamewindow::addTool(Tool* tool, int x, int y) {
     case ToolType::Excavator:
         if (Map[y/GRID_SIZE][x/GRID_SIZE]==-1){
             Map[y/GRID_SIZE][x/GRID_SIZE]=-3;
-            emit resourceBeingExcavated(1, x, y, tool->getRotation());
+//            emit resourceBeingExcavated(1, x, y, tool->getRotation());
+            miningElements.push_back(std::make_tuple(QPoint(x-x%GRID_SIZE+0.5*GRID_SIZE, y-y%GRID_SIZE+0.5*GRID_SIZE), 1, tool->getRotation()));
+            qDebug()<<"开采 1 ing";
         }
         else if (Map[y/GRID_SIZE][x/GRID_SIZE]==-2){
             Map[y/GRID_SIZE][x/GRID_SIZE]=-4;
-            emit resourceBeingExcavated(2, x, y, tool->getRotation());
+//            emit resourceBeingExcavated(2, x, y, tool->getRotation());
+            miningElements.push_back(std::make_tuple(QPoint(x-x%GRID_SIZE+0.5*GRID_SIZE, y-y%GRID_SIZE+0.5*GRID_SIZE), 2, tool->getRotation()));
+            qDebug()<<"开采 2 ing";
         }
         else{
         Map[y/GRID_SIZE][x/GRID_SIZE]=2;

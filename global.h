@@ -3,4 +3,5 @@
 #include "config.h"
 
 extern int Map[mapHeight][mapWidth];
+extern int donePieces;
 #endif // GLOBAL_H

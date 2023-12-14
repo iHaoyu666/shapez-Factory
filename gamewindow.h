@@ -29,6 +29,7 @@ public:
     QTimer* keyCheckTimer;
     QTimer* generateTimer;
     QLabel* moneyLable = new QLabel(this);
+    QLabel* centerLable = new QLabel(this);
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
@@ -42,7 +43,8 @@ private:
     int rotationInterval = 200;
     //金钱数
     int money=0;
-
+    //交付数
+    int donePieces=0;
     bool isRKeyPressed=false;
     bool isMousePressed = false;
     std::vector<resource*> resources;

@@ -19,3 +19,4 @@ int Map[mapHeight][mapWidth]{
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 
 };
+int donePieces=0;
