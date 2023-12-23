@@ -4,9 +4,9 @@ void resource::draw(QPainter &painter){
     if (state==0){
         return;
     }
-    QPixmap resource1Image(":/res/pic/pieces/resource1.png");
+    QPixmap resource1Image(":/res/pic/pieces/circle1.png");
     QPixmap resource2Image(":/res/pic/pieces/resource2.png");
-    QPixmap resource2clipImage(":/res/pic/pieces/2-2.png");
+    QPixmap resource1clipImage(":/res/pic/pieces/circle1uphalf.png");
     switch(kind){
     case 1:
         painter.drawPixmap(currentX-0.25*GRID_SIZE, currentY-0.25*GRID_SIZE, 0.5*GRID_SIZE, 0.5*GRID_SIZE, resource1Image);
@@ -15,17 +15,17 @@ void resource::draw(QPainter &painter){
         painter.drawPixmap(currentX-0.25*GRID_SIZE, currentY-0.25*GRID_SIZE, 0.5*GRID_SIZE, 0.5*GRID_SIZE, resource2Image);
         break;
     case 3:
-        painter.drawPixmap(currentX-0.25*GRID_SIZE, currentY, 0.5*GRID_SIZE, 0.5*GRID_SIZE, resource2clipImage);
+        painter.drawPixmap(currentX-0.25*GRID_SIZE, currentY-0.25*GRID_SIZE, 0.5*GRID_SIZE, 0.5*GRID_SIZE, resource1clipImage);
         break;
 
     }
 }
 
-void resource::moveWithConveyor()//int direction
+void resource::moveWithConveyor(int _rate)//int direction
 {
 //    // 更新资源的速率和方向
 //    this->direction = direction;
-
+    rate = _rate;
     // 检查传送带方向上的下一个位置是否是传送带
     int nextX = currentX;
     int nextY = currentY;
@@ -106,7 +106,7 @@ void resource::moveWithConveyor()//int direction
     }
     else if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == 4)//下一个位置剪切器剪切头
     {
-        if(kind==2){
+        if(kind==1){
             switch (direction)
             {
             case 0: // 向上

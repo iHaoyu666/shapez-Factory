@@ -57,6 +57,7 @@ else()
             resource.h resource.cpp
             config.h
             global.h global.cpp
+            task.h task.cpp
 
 
 

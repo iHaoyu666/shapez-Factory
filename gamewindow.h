@@ -12,6 +12,7 @@
 #include <QDateTime>
 #include <QLabel>
 #include "global.h"
+#include "enhancementhub.h"
 class gamewindow : public QWidget
 {
     Q_OBJECT
@@ -38,6 +39,7 @@ public:
     void checkRKeyPressed();
     void generateResource(int kind, int x, int y, int angle);
 private:
+    EnhancementHub* enhancementHub;
     // 上一次旋转的时间戳
     QDateTime lastRotationTime;
     // 最小时间间隔（毫秒）
@@ -45,7 +47,10 @@ private:
     //金钱数
     int money=0;
     //交付数
-    int donePieces=0;
+//    int donePieces=0;
+    int movingRate=1;//传送速度
+    int miningRate=1;//开采速度
+    int cuttingRate=1;//切割速度
     bool isRKeyPressed=false;
     bool isMousePressed = false;
     std::vector<resource*> resources;
@@ -79,6 +84,14 @@ private:
 //    };
 signals:
     void resourceBeingExcavated(int kind, int x, int y, int angle);
+    void taskCompleted();//一个任务完成信号
+public slots:
+    void increaseMiningRate();
+    void increaseConveyorRate();
+    void increaseCuttingRate();
+    void showEnhancementHub();
+
+
 };
 
 #endif // GAMEWINDOW_H

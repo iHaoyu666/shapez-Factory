@@ -8,6 +8,7 @@
 #include "map.h"
 #include <QTimer>
 #include <QDebug>
+
 #define MouClickRegion(X, Y, Width, Height)     \
 (ev->x() >= (X) && ev->x() <= (X) + (Width) &&  \
 ev->y() >= (Y) && ev->y() <= (Y) + (Height))
@@ -50,7 +51,7 @@ gamewindow::gamewindow(QWidget *parent)
     });
 
     connect(refreshTimer, &QTimer::timeout, this, QOverload<>::of(&gamewindow::update));
-    generateTimer->start(5000);//生成资源速度
+    generateTimer->start(2000);//生成资源速度
     refreshTimer->start(50);  // 设置刷新间隔，单位为毫秒
 
     //金钱标签
@@ -62,6 +63,13 @@ gamewindow::gamewindow(QWidget *parent)
     centerLable->setFont(QFont("黑体", 8));
     moneyLable->setText(QString("金钱：%1").arg(money));
     centerLable->setText(QString("已交付数量：%1").arg(donePieces));
+
+    enhancementHub = new EnhancementHub(this);
+    connect(this, &gamewindow::taskCompleted, this, &gamewindow::showEnhancementHub);
+    // 连接EnhancementHub窗口的信号到GameWindow的槽函数
+    connect(enhancementHub, &EnhancementHub::miningRateIncreased, this, &gamewindow::increaseMiningRate);
+    connect(enhancementHub, &EnhancementHub::conveyorRateIncreased, this, &gamewindow::increaseConveyorRate);
+    connect(enhancementHub, &EnhancementHub::cuttingRateIncreased, this, &gamewindow::increaseCuttingRate);
 }
 
 void gamewindow::paintEvent(QPaintEvent* event) {
@@ -114,7 +122,7 @@ void gamewindow::paintEvent(QPaintEvent* event) {
         tool->draw(painter);
     }
     for (auto resource: resources){
-        resource->moveWithConveyor();
+        resource->moveWithConveyor(movingRate);
         if(resource->state==0){
             removeresource(resource);
             delete resource;
@@ -425,4 +433,32 @@ void gamewindow::mouseReleaseEvent(QMouseEvent *event) {
         selectedTool = nullptr;
         update();  // 重新绘制界面
     }
+}
+
+void gamewindow::increaseMiningRate()
+{
+    miningRate++;
+    // 处理加快开采速率的逻辑
+    // ...
+    enhancementHub->close();
+}
+
+void gamewindow::increaseConveyorRate()
+{
+    movingRate++;//
+    // 处理加快传送速率的逻辑
+    // ...
+    enhancementHub->close();
+}
+
+void gamewindow::increaseCuttingRate()
+{
+    // 处理加快切割速率的逻辑
+    // ...
+    enhancementHub->close();
+}
+void gamewindow::showEnhancementHub()
+{
+    // 显示EnhancementHub窗口
+    enhancementHub->show();
 }
