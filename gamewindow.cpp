@@ -49,7 +49,7 @@ gamewindow::gamewindow(QWidget *parent)
             resources.push_back(newResource);
         }
     });
-
+    task->nextTask();//初始化任务
     connect(refreshTimer, &QTimer::timeout, this, QOverload<>::of(&gamewindow::update));
     generateTimer->start(2000);//生成资源速度
     refreshTimer->start(50);  // 设置刷新间隔，单位为毫秒
@@ -57,12 +57,24 @@ gamewindow::gamewindow(QWidget *parent)
     //金钱标签
     moneyLable->move(20, 40);
     moneyLable->setFont(QFont("黑体", 20));
-
+    moneyLable->setText(QString("金钱：%1").arg(money));
     //交付数量标签
     centerLable->move(GAME_WIDTH/2-GRID_SIZE, GAME_HEIGHT/2-GRID_SIZE);
-    centerLable->setFont(QFont("黑体", 8));
-    moneyLable->setText(QString("金钱：%1").arg(money));
-    centerLable->setText(QString("已交付数量：%1").arg(donePieces));
+    centerLable->setFont(QFont("黑体", 7));
+    centerLable->setText(QString("已交付数量:%1").arg(donePieces));
+    centerLable->adjustSize();
+
+    resource1Lable->move(GAME_WIDTH/2-GRID_SIZE, GAME_HEIGHT/2-GRID_SIZE+20);
+    resource1Lable->setFont(QFont("黑体", 7));
+    resource1Lable->setText(QString("圆形未交付数量：%1").arg(resource1Needed));
+
+    resource2Lable->move(GAME_WIDTH/2-GRID_SIZE, GAME_HEIGHT/2-GRID_SIZE+40);
+    resource2Lable->setFont(QFont("黑体", 7));
+    resource2Lable->setText(QString("方形未交付数量：%1").arg(resource2Needed));
+
+    resource1clipLable->move(GAME_WIDTH/2-GRID_SIZE, GAME_HEIGHT/2-GRID_SIZE+60);
+    resource1clipLable->setFont(QFont("黑体", 7));
+    resource1clipLable->setText(QString("半圆未交付数量：%1").arg(resource1clipNeeded));
 
     enhancementHub = new EnhancementHub(this);
     connect(this, &gamewindow::taskCompleted, this, &gamewindow::showEnhancementHub);
@@ -80,6 +92,9 @@ void gamewindow::paintEvent(QPaintEvent* event) {
     drawresource(painter);
     moneyLable->setText(QString("金钱：%1").arg(money));
     centerLable->setText(QString("已交付数量：%1").arg(donePieces));
+    resource1Lable->setText(QString("圆形未交付数量：%1").arg(resource1Needed));
+    resource2Lable->setText(QString("方形未交付数量：%1").arg(resource2Needed));
+    resource1clipLable->setText(QString("半圆未交付数量：%1").arg(resource1clipNeeded));
     if (GetKeyState('R')<0&&isMousePressed) {
         QDateTime currentTime = QDateTime::currentDateTime();
         if (lastRotationTime.isNull() || lastRotationTime.msecsTo(currentTime) >= rotationInterval) {
@@ -118,10 +133,10 @@ void gamewindow::paintEvent(QPaintEvent* event) {
 //        // 将记录的格子放置在传送带上
 //        placeConveyorOnPath(path);
 //    }
-    for (const auto& tool : tools){
+    for (const auto& tool : tools){//画出所有工具
         tool->draw(painter);
     }
-    for (auto resource: resources){
+    for (auto resource: resources){//更新资源
         resource->moveWithConveyor(movingRate);
         if(resource->state==0){
             removeresource(resource);
@@ -129,6 +144,12 @@ void gamewindow::paintEvent(QPaintEvent* event) {
             continue;
         }
         resource->draw(painter);
+        flag=1;
+    }
+    if (resource1Needed==0&&resource1clipNeeded==0&&resource2Needed==0&&flag!=0){
+        enhancementHub->show();
+        task->nextTask();//切换到下一个任务
+        qDebug()<<"任务完成";
     }
     if (selectedTool) {
         selectedTool->draw(painter);
@@ -440,7 +461,7 @@ void gamewindow::increaseMiningRate()
     miningRate++;
     // 处理加快开采速率的逻辑
     // ...
-    enhancementHub->close();
+    enhancementHub->hide();
 }
 
 void gamewindow::increaseConveyorRate()
@@ -448,14 +469,15 @@ void gamewindow::increaseConveyorRate()
     movingRate++;//
     // 处理加快传送速率的逻辑
     // ...
-    enhancementHub->close();
+    enhancementHub->hide();
 }
 
 void gamewindow::increaseCuttingRate()
 {
+
     // 处理加快切割速率的逻辑
     // ...
-    enhancementHub->close();
+    enhancementHub->hide();
 }
 void gamewindow::showEnhancementHub()
 {

@@ -1,14 +1,16 @@
 #ifndef ENHANCEMENTHUB_H
 #define ENHANCEMENTHUB_H
 
+#include <QMainWindow>
 #include <QWidget>
 #include <QPushButton>
-class EnhancementHub : public QWidget
+class EnhancementHub : public QMainWindow
 {
     Q_OBJECT
 public:
     explicit EnhancementHub(QWidget *parent = nullptr);
-
+    void showEvent(QShowEvent *event);
+    void hideEvent(QHideEvent *event);
 signals:
     void miningRateIncreased();
     void conveyorRateIncreased();

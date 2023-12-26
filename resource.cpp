@@ -155,6 +155,21 @@ void resource::moveWithConveyor(int _rate)//int direction
     else if(Map[nextY/GRID_SIZE][nextX/GRID_SIZE] ==-5 )//交付中心
     {
         donePieces++;
+        if(kind==1){
+            if (resource1Needed!=0){
+                resource1Needed--;
+            }
+        }
+        if(kind==2){
+            if (resource2Needed!=0){
+                resource2Needed--;
+            }
+        }
+        if(kind==3){
+            if (resource1clipNeeded!=0){
+                resource1clipNeeded--;
+            }
+        }
         state=0;
         return;
     }

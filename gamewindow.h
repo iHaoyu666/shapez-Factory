@@ -13,6 +13,7 @@
 #include <QLabel>
 #include "global.h"
 #include "enhancementhub.h"
+#include "task.h"
 class gamewindow : public QWidget
 {
     Q_OBJECT
@@ -31,6 +32,9 @@ public:
     QTimer* generateTimer;
     QLabel* moneyLable = new QLabel(this);
     QLabel* centerLable = new QLabel(this);
+    QLabel* resource1Lable = new QLabel(this);
+    QLabel* resource2Lable = new QLabel(this);
+    QLabel* resource1clipLable = new QLabel(this);
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
@@ -39,6 +43,7 @@ public:
     void checkRKeyPressed();
     void generateResource(int kind, int x, int y, int angle);
 private:
+    Task* task= new Task(this);
     EnhancementHub* enhancementHub;
     // 上一次旋转的时间戳
     QDateTime lastRotationTime;
@@ -51,6 +56,7 @@ private:
     int movingRate=1;//传送速度
     int miningRate=1;//开采速度
     int cuttingRate=1;//切割速度
+    int flag=0;
     bool isRKeyPressed=false;
     bool isMousePressed = false;
     std::vector<resource*> resources;

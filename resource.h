@@ -10,7 +10,7 @@ class resource : public QObject
     Q_OBJECT
     int currentX, currentY;
 
-    int kind;// 1代表为resource1 2 代表为resource2 3 表示 resource1 被切成了 一半
+    int kind; // 1代表为resource1 2 代表为resource2 3 表示 resource1 被切成了 一半
     int rate = 1; //随传送带运行的速率
     int direction; // 行动方向
 public:
