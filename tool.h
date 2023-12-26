@@ -20,7 +20,12 @@ public:
 
     void rotate(int angle) {
         rotationAngle += angle;
-        rotationAngle=rotationAngle % 360;
+        if (type!=ToolType::Conveyor){
+            rotationAngle=rotationAngle % 360;
+        }
+        else{
+            rotationAngle=rotationAngle % 1080;
+        }
     }
     ToolType getType() const { return type; }
     QPoint& getPosition() { return position; }

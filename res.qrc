@@ -8,8 +8,6 @@
         <file>res/pic/buildings/1.png</file>
         <file>res/pic/buildings/2.png</file>
         <file>res/pic/buildings/4.png</file>
-        <file>res/pic/buildings/0-1.png</file>
-        <file>res/pic/buildings/0-2.png</file>
         <file>res/pic/pieces/resource1.png</file>
         <file>res/pic/pieces/resource2.png</file>
         <file>res/pic/pieces/1-0.png</file>
@@ -17,5 +15,13 @@
         <file>res/pic/buildings/0-3.png</file>
         <file>res/pic/pieces/circle1.png</file>
         <file>res/pic/pieces/circle1uphalf.png</file>
+        <file>res/pic/buildings/0-360.png</file>
+        <file>res/pic/buildings/0-450.png</file>
+        <file>res/pic/buildings/0-540.png</file>
+        <file>res/pic/buildings/0-630.png</file>
+        <file>res/pic/buildings/0-720.png</file>
+        <file>res/pic/buildings/0-810.png</file>
+        <file>res/pic/buildings/0-900.png</file>
+        <file>res/pic/buildings/0-990.png</file>
     </qresource>
 </RCC>

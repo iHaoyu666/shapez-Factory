@@ -11,9 +11,12 @@ public:
 
     void nextTask();
     void clean();
+    int getCnt() const{
+        return count;
+    }
 signals:
 private:
-    int count=1;//代表第几个任务
+    int count=0;//代表第几个任务
 };
 
 #endif // TASK_H

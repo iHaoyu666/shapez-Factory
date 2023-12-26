@@ -25,6 +25,8 @@ void resource::moveWithConveyor(int _rate)//int direction
 {
 //    // 更新资源的速率和方向
 //    this->direction = direction;
+
+
     rate = _rate;
     // 检查传送带方向上的下一个位置是否是传送带
     int nextX = currentX;

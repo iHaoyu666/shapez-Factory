@@ -91,7 +91,7 @@ void gamewindow::paintEvent(QPaintEvent* event) {
     drawToolSelection(painter);
     drawresource(painter);
     moneyLable->setText(QString("金钱：%1").arg(money));
-    centerLable->setText(QString("已交付数量：%1").arg(donePieces));
+    centerLable->setText(QString("任务%1").arg(task->getCnt()));
     resource1Lable->setText(QString("圆形未交付数量：%1").arg(resource1Needed));
     resource2Lable->setText(QString("方形未交付数量：%1").arg(resource2Needed));
     resource1clipLable->setText(QString("半圆未交付数量：%1").arg(resource1clipNeeded));
@@ -258,7 +258,7 @@ void gamewindow::drawMap(QPainter& painter){
 void gamewindow::drawToolSelection(QPainter& painter){
 
     // 加载工具图片
-    QPixmap ConveyorPixmap(":/res/pic/buildings/0.png");
+    QPixmap ConveyorPixmap(":/res/pic/buildings/0-3.png");
     QPixmap CutterPixmap(":/res/pic/buildings/1.png");
     QPixmap ExcavatorPixmap(":/res/pic/buildings/2.png");
     QPixmap GarbageCanPixmap(":/res/pic/buildings/4.png");
@@ -309,7 +309,12 @@ void gamewindow::addTool(Tool* tool, int x, int y) {
     tools.push_back(tool);
     switch (tool->getType()) {
     case ToolType::Conveyor:
-        Map[y/GRID_SIZE][x/GRID_SIZE]=1;
+        if(tool->getRotation()==0){
+            Map[y/GRID_SIZE][x/GRID_SIZE]=1;//表示直线向上的传送带并且与0区分开
+        }
+        else{
+            Map[y/GRID_SIZE][x/GRID_SIZE]=tool->getRotation();
+        }
         break;
     case ToolType::Excavator:
         if (Map[y/GRID_SIZE][x/GRID_SIZE]==-1){
