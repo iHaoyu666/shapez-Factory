@@ -1,5 +1,6 @@
 #include "resource.h"
 #include <QDebug>
+#include <cmath>
 void resource::draw(QPainter &painter){
     if (state==0){
         return;
@@ -21,11 +22,10 @@ void resource::draw(QPainter &painter){
     }
 }
 
-void resource::moveWithConveyor(int _rate)//int direction
+void resource::moveWithConveyor(double _rate)//int direction
 {
 //    // 更新资源的速率和方向
 //    this->direction = direction;
-
 
     rate = _rate;
     // 检查传送带方向上的下一个位置是否是传送带
@@ -33,6 +33,7 @@ void resource::moveWithConveyor(int _rate)//int direction
     int nextY = currentY;
     int nextGridX=currentX/GRID_SIZE; //存储沿运动方向走到的下一个格子的位置
     int nextGirdY=currentY/GRID_SIZE;
+    double dx, dy,radius,angle;
     switch (direction)
     {
     case 0: // 向上
@@ -51,55 +52,124 @@ void resource::moveWithConveyor(int _rate)//int direction
         nextX-=rate;
         nextGridX--;
         break;
+    case 360:
+        nextX = currentX + rate;
+        nextY = currentY - rate;
+        if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE]%90!=0&&Map[nextY/GRID_SIZE][nextX/GRID_SIZE]!=1){
+            direction=90;
+        }
+        break;
+    case 450:
+        nextX = currentX + rate;
+        nextY = currentY - rate;
+        if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE]%90!=0&&Map[nextY/GRID_SIZE][nextX/GRID_SIZE]!=1){
+            direction=0;
+        }
+        break;
+    case 540:
+        nextX = currentX + rate;
+        nextY = currentY + rate;
+        if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE]%90!=0&&Map[nextY/GRID_SIZE][nextX/GRID_SIZE]!=1){
+            direction=180;
+        }
+        break;
+    case 630:
+        nextX = currentX + rate;
+        nextY = currentY + rate;
+        if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE]%90!=0&&Map[nextY/GRID_SIZE][nextX/GRID_SIZE]!=1){
+            direction=90;
+        }
+        break;
+    case 720:
+        nextX = currentX - rate;
+        nextY = currentY + rate;
+        if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE]%90!=0&&Map[nextY/GRID_SIZE][nextX/GRID_SIZE]!=1){
+            direction=270;
+        }
+        break;
+    case 810:
+        nextX = currentX - rate;
+        nextY = currentY + rate;
+        if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE]%90!=0&&Map[nextY/GRID_SIZE][nextX/GRID_SIZE]!=1){
+            direction=180;
+        }
+        break;
+    case 900:
+        nextX = currentX - rate;
+        nextY = currentY - rate;
+        if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE]%90!=0&&Map[nextY/GRID_SIZE][nextX/GRID_SIZE]!=1){
+            direction=0;
+        }
+        break;
+    case 990:
+        nextX = currentX - rate;
+        nextY = currentY - rate;
+        if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE]%90!=0&&Map[nextY/GRID_SIZE][nextX/GRID_SIZE]!=1){
+            direction=270;
+        }
+        break;
     default:
         break;
     }
-    if(Map[nextGirdY][nextGridX]!=1&&(nextX%GRID_SIZE==0.5*GRID_SIZE&&nextY%GRID_SIZE==0.5*GRID_SIZE)){
-        int clockwiseDirections[] = {90, 270}; // 顺时针方向数组
-        for (int i = 0; i < 2; i++) {
-            int newDirection = (direction + clockwiseDirections[i]) % 360;
-            int newX = currentX;
-            int newY = currentY;
-            int nextGRIDX=currentX/GRID_SIZE;
-            int nextGRIDY=currentY/GRID_SIZE;
-            switch (newDirection) {
-            case 0: // 向上
-                newY -= rate;
-                nextGRIDY--;
-                break;
-            case 90: // 向右
-                newX += rate;
-                nextGRIDX++;
-                break;
-            case 180: // 向下
-                newY += rate;
-                nextGRIDY++;
-                break;
-            case 270: // 向左
-                newX -= rate;
-                nextGRIDX--;
-                break;
-            default:
-                break;
-            }
+//    if(Map[nextGirdY][nextGridX]!=1&&(nextX%GRID_SIZE==0.5*GRID_SIZE&&nextY%GRID_SIZE==0.5*GRID_SIZE)){
+//        int clockwiseDirections[] = {90, 270}; // 顺时针方向数组
+//        for (int i = 0; i < 2; i++) {
+//            int newDirection = (direction + clockwiseDirections[i]) % 360;
+//            int newX = currentX;
+//            int newY = currentY;
+//            int nextGRIDX=currentX/GRID_SIZE;
+//            int nextGRIDY=currentY/GRID_SIZE;
+//            switch (newDirection) {
+//            case 0: // 向上
+//                newY -= rate;
+//                nextGRIDY--;
+//                break;
+//            case 90: // 向右
+//                newX += rate;
+//                nextGRIDX++;
+//                break;
+//            case 180: // 向下
+//                newY += rate;
+//                nextGRIDY++;
+//                break;
+//            case 270: // 向左
+//                newX -= rate;
+//                nextGRIDX--;
+//                break;
+//            default:
+//                break;
+//            }
 
-            // 检查新方向上的下一个位置是否是传送带
-            if (Map[nextGRIDY][nextGRIDX] == 1) {
-                // 更新位置和方向
-                currentX = newX;
-                currentY = newY;
-                this->direction = newDirection;
-                break;
-            }
-    }
-    }
+//            // 检查新方向上的下一个位置是否是传送带
+//            if (Map[nextGRIDY][nextGRIDX] == 1) {
+//                // 更新位置和方向
+//                currentX = newX;
+//                currentY = newY;
+//                this->direction = newDirection;
+//                break;
+//            }
+//    }
+//    }
     // 检查下一个位置是否是传送带 或者是资源所在地段
-    if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == 1||Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == -3||Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == -4)
+    if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == -3||Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == -4)
     {
         //更新位置
         currentX=nextX;
         currentY=nextY;
-
+    }
+    else if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == 1)//代表0度
+    {
+        direction=0;
+        //更新位置
+        currentX=nextX;
+        currentY=nextY;
+    }
+    else if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE] %90==0 &&Map[nextY/GRID_SIZE][nextX/GRID_SIZE]!=0)//代表90-990度
+    {
+        direction=Map[nextY/GRID_SIZE][nextX/GRID_SIZE];
+        //更新位置
+        currentX=nextX;
+        currentY=nextY;
     }
     else if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == 3)//下一个位置垃圾桶
     {
@@ -150,7 +220,7 @@ void resource::moveWithConveyor(int _rate)//int direction
         // 更新地图，将新资源放置在下一个位置
 
     }
-    else if (Map[nextY][nextX] == 4)//下一个位置剪切器没用的口
+    else if (Map[nextY][nextX] == 5)//下一个位置剪切器没用的口
     {
 
     }

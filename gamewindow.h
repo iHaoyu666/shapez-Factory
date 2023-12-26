@@ -53,7 +53,7 @@ private:
     int money=0;
     //交付数
 //    int donePieces=0;
-    int movingRate=1;//传送速度
+    double movingRate=1.0;//传送速度
     int miningRate=1;//开采速度
     int cuttingRate=1;//切割速度
     int flag=0;
