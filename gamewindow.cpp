@@ -137,7 +137,7 @@ void gamewindow::paintEvent(QPaintEvent* event) {
         tool->draw(painter);
     }
     for (auto resource: resources){//更新资源
-        resource->moveWithConveyor(movingRate);
+        resource->moveWithConveyor(movingRate, cuttingRate);
         if(resource->state==0){
             removeresource(resource);
             delete resource;

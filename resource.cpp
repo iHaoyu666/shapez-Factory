@@ -2,12 +2,15 @@
 #include <QDebug>
 #include <cmath>
 void resource::draw(QPainter &painter){
-    if (state==0){
+    if (state==0||state==2){
         return;
     }
     QPixmap resource1Image(":/res/pic/pieces/circle1.png");
     QPixmap resource2Image(":/res/pic/pieces/resource2.png");
-    QPixmap resource1clipImage(":/res/pic/pieces/circle1uphalf.png");
+    QPixmap resource1clipImage1(":/res/pic/pieces/circle1uphalf.png");
+    QPixmap resource1clipImage2(":/res/pic/pieces/circle1downhalf.png");
+    QPixmap resource1clipImage3(":/res/pic/pieces/circle1lefthalf.png");
+    QPixmap resource1clipImage4(":/res/pic/pieces/circle1righthalf.png");
     switch(kind){
     case 1:
         painter.drawPixmap(currentX-0.25*GRID_SIZE, currentY-0.25*GRID_SIZE, 0.5*GRID_SIZE, 0.5*GRID_SIZE, resource1Image);
@@ -16,24 +19,44 @@ void resource::draw(QPainter &painter){
         painter.drawPixmap(currentX-0.25*GRID_SIZE, currentY-0.25*GRID_SIZE, 0.5*GRID_SIZE, 0.5*GRID_SIZE, resource2Image);
         break;
     case 3:
-        painter.drawPixmap(currentX-0.25*GRID_SIZE, currentY-0.25*GRID_SIZE, 0.5*GRID_SIZE, 0.5*GRID_SIZE, resource1clipImage);
+        switch (direction)
+        {
+        case 0: // 向上
+            painter.drawPixmap(currentX-0.25*GRID_SIZE, currentY-0.25*GRID_SIZE, 0.25*GRID_SIZE, 0.5*GRID_SIZE, resource1clipImage3);
+            break;
+        case 90: // 向右
+            painter.drawPixmap(currentX-0.25*GRID_SIZE, currentY-0.25*GRID_SIZE, 0.5*GRID_SIZE, 0.25*GRID_SIZE, resource1clipImage1);
+            break;
+        case 180:  //向下
+            painter.drawPixmap(currentX, currentY-0.25*GRID_SIZE, 0.25*GRID_SIZE, 0.5*GRID_SIZE, resource1clipImage4);
+            break;
+        case 270:  //向左
+            painter.drawPixmap(currentX-0.25*GRID_SIZE, currentY, 0.5*GRID_SIZE, 0.25*GRID_SIZE, resource1clipImage2);
+            break;
+        default:
+            break;
+        }
+
         break;
 
     }
 }
 
-void resource::moveWithConveyor(double _rate)//int direction
+void resource::moveWithConveyor(double _rate, double cuttingRate)//int direction
 {
 //    // 更新资源的速率和方向
 //    this->direction = direction;
 
-    rate = _rate;
+    if(state==2){
+        rate=cuttingRate;
+    }else{
+        rate = _rate;
+    }
     // 检查传送带方向上的下一个位置是否是传送带
     int nextX = currentX;
     int nextY = currentY;
     int nextGridX=currentX/GRID_SIZE; //存储沿运动方向走到的下一个格子的位置
     int nextGirdY=currentY/GRID_SIZE;
-    double dx, dy,radius,angle;
     switch (direction)
     {
     case 0: // 向上
@@ -150,7 +173,7 @@ void resource::moveWithConveyor(double _rate)//int direction
 //            }
 //    }
 //    }
-    // 检查下一个位置是否是传送带 或者是资源所在地段
+    // 检查下一个位置是否是资源所在地段
     if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == -3||Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == -4)
     {
         //更新位置
@@ -159,6 +182,7 @@ void resource::moveWithConveyor(double _rate)//int direction
     }
     else if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == 1)//代表0度
     {
+        state=1;
         direction=0;
         //更新位置
         currentX=nextX;
@@ -166,6 +190,7 @@ void resource::moveWithConveyor(double _rate)//int direction
     }
     else if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE] %90==0 &&Map[nextY/GRID_SIZE][nextX/GRID_SIZE]!=0)//代表90-990度
     {
+        state=1;
         direction=Map[nextY/GRID_SIZE][nextX/GRID_SIZE];
         //更新位置
         currentX=nextX;
@@ -178,35 +203,42 @@ void resource::moveWithConveyor(double _rate)//int direction
     }
     else if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == 4)//下一个位置剪切器剪切头
     {
-        if(kind==1){
+        if(kind==1||kind==3){
             switch (direction)
             {
             case 0: // 向上
                 if (Map[nextY/GRID_SIZE-1][nextX/GRID_SIZE+1] == 3)
                 {
-                    currentY-=GRID_SIZE;
+                    state=2;
+                    currentY-= rate;
                     kind=3;
+
                 }
                 break;
             case 90: // 向右
                 if (Map[nextY/GRID_SIZE+1][nextX/GRID_SIZE+1] == 3)
                 {
-                    currentX+=GRID_SIZE;
+                    state=2;
+                    currentX+=rate;
                     kind=3;
                 }
                 break;
             case 180:
                 if (Map[nextY/GRID_SIZE+1][nextX/GRID_SIZE-1] == 3)
                 {
+
+                    state=2;
                     kind=3;
-                    currentY+=GRID_SIZE;
+                    currentY+=rate;
+
                 }
                 break;
             case 270:
                 if (Map[nextY/GRID_SIZE-1][nextX/GRID_SIZE-1] == 3)
                 {
+                    state=2;
                     kind=3;
-                    currentX-=GRID_SIZE;
+                    currentX-=rate;
                 }
                 break;
             default:
@@ -247,6 +279,7 @@ void resource::moveWithConveyor(double _rate)//int direction
     }
     else // 只是没找到工具 则顺时针寻找有没有传送带
     {
+
         int clockwiseDirections[] = {90, 270}; // 顺时针方向数组
 
         for (int i = 0; i < 2; i++) {

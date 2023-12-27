@@ -15,9 +15,9 @@ class resource : public QObject
     int direction; // 行动方向
 public:
     explicit resource(int kind, int x, int y, int direction): currentX(x), currentY(y), direction(direction), kind(kind){};
-    void moveWithConveyor(double _rate);//direction 0 向上     90 向右     180 down      270  left  360 + specific
+    void moveWithConveyor(double _rate, double cuttingRate);//direction 0 向上     90 向右     180 down      270  left  360 + specific
     void draw(QPainter&);
-    int state=1;//1代表显示 0 代表不显示
+    int state=1;//1代表显示  0 代表不显示需要被删除  2 表示不显示不需要删除
 signals:
     void resourceGenerated(resource* newResource);
 };
