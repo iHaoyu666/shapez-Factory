@@ -35,6 +35,9 @@ public:
     QLabel* resource1Lable = new QLabel(this);
     QLabel* resource2Lable = new QLabel(this);
     QLabel* resource1clipLable = new QLabel(this);
+    QLabel* miningRateLabel = new QLabel(this);
+    QLabel* cuttingRateLabel = new QLabel(this);
+    QLabel* movingRateLabel = new QLabel(this);
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
@@ -54,8 +57,8 @@ private:
     //交付数
 //    int donePieces=0;
     double movingRate=1.0;//传送速度
-    double miningRate=1;//开采速度
-    double cuttingRate=1;//切割速度
+    int miningRate=3000; //开采速度 除以1000表示秒数 用于给generateTimer参数
+    double cuttingRate=1.0; //切割速度
     int flag=0;
     bool isRKeyPressed=false;
     bool isMousePressed = false;

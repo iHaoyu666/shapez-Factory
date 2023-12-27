@@ -34,6 +34,7 @@ gamewindow::gamewindow(QWidget *parent)
 
     refreshTimer = new QTimer(this);
     generateTimer= new QTimer(this);
+    generateTimer->start(miningRate);//生成资源速度
     connect(generateTimer, &QTimer::timeout, this, [&]{
         for (const auto& element : qAsConst(miningElements)) {
             // 获取位置、种类和方向信息
@@ -51,9 +52,15 @@ gamewindow::gamewindow(QWidget *parent)
     });
     task->nextTask();//初始化任务
     connect(refreshTimer, &QTimer::timeout, this, QOverload<>::of(&gamewindow::update));
-    generateTimer->start(2000);//生成资源速度
-    refreshTimer->start(50);  // 设置刷新间隔，单位为毫秒
 
+    refreshTimer->start(50);  // 设置刷新间隔，单位为毫秒
+    //三个速率标签
+    miningRateLabel->setText("开采速率: " + QString::number(miningRate));
+    miningRateLabel->move(GAME_WIDTH-3*GRID_SIZE, GAME_HEIGHT-GRID_SIZE);
+    cuttingRateLabel->setText("剪切速率: " + QString::number(cuttingRate));
+    cuttingRateLabel->move(GAME_WIDTH-3*GRID_SIZE, GAME_HEIGHT-2*GRID_SIZE);
+    movingRateLabel->setText("移动速率: " + QString::number(movingRate));
+    movingRateLabel->move(GAME_WIDTH-3*GRID_SIZE, GAME_HEIGHT-3*GRID_SIZE);
     //金钱标签
     moneyLable->move(20, 40);
     moneyLable->setFont(QFont("黑体", 20));
@@ -463,26 +470,27 @@ void gamewindow::mouseReleaseEvent(QMouseEvent *event) {
 
 void gamewindow::increaseMiningRate()
 {
-    miningRate++;
-    // 处理加快开采速率的逻辑
-    // ...
+    miningRate/=1.2;
+    generateTimer->setInterval(miningRate);
     enhancementHub->hide();
+    miningRateLabel->setText("Mining Rate: " + QString::number(miningRate));
+
 }
 
 void gamewindow::increaseConveyorRate()
 {
-    movingRate++;//
-    // 处理加快传送速率的逻辑
-    // ...
+    movingRate+=1;
     enhancementHub->hide();
+    movingRateLabel->setText("Moving Rate: " + QString::number(movingRate));
 }
 
 void gamewindow::increaseCuttingRate()
 {
-
-    // 处理加快切割速率的逻辑
-    // ...
+    cuttingRate+=1;
     enhancementHub->hide();
+
+    cuttingRateLabel->setText("Cutting Rate: " + QString::number(cuttingRate));
+
 }
 void gamewindow::showEnhancementHub()
 {
