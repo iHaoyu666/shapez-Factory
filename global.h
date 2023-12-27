@@ -4,8 +4,9 @@
 
 extern int Map[mapHeight][mapWidth];
 extern int donePieces;
-extern int money;
+extern int gold;
 extern int resource1Needed;
 extern int resource2Needed;
 extern int resource1clipNeeded;
+extern int goldReward;
 #endif // GLOBAL_H

@@ -38,6 +38,7 @@ public:
     QLabel* miningRateLabel = new QLabel(this);
     QLabel* cuttingRateLabel = new QLabel(this);
     QLabel* movingRateLabel = new QLabel(this);
+    QLabel* doneLabel = new QLabel(this);
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
@@ -51,13 +52,13 @@ private:
     // 上一次旋转的时间戳
     QDateTime lastRotationTime;
     // 最小时间间隔（毫秒）
-    int rotationInterval = 200;
+    int rotationInterval = 125;
     //金钱数
     int money=0;
     //交付数
 //    int donePieces=0;
     double movingRate=1.0;//传送速度
-    int miningRate=3000; //开采速度 除以1000表示秒数 用于给generateTimer参数
+    double miningRate=3000; //开采速度 除以1000表示秒数 用于给generateTimer参数
     double cuttingRate=1.0; //切割速度
     int flag=0;
     bool isRKeyPressed=false;

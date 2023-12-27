@@ -2,6 +2,7 @@
 #include "./ui_mainwindow.h"
 #include "config.h"
 #include "gamewindow.h"
+#include "shopwindow.h"
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -32,6 +33,15 @@ void MainWindow::showGameInfo() {
     QMessageBox::information(this, "游戏说明", "This is a game. Have fun!");//此处在设计完之后添加游戏说明
 }
 
+void MainWindow::openShop()
+{
+    QMessageBox::information(this, "商店", "打开商店窗口");
+
+    // 创建商店窗口
+    ShopWindow *shopWindow = new ShopWindow(this);
+    shopWindow->show();
+}
+
 void MainWindow::initScene()
 {
     //初始化窗口大小
@@ -60,4 +70,8 @@ void MainWindow::initScene()
     QPushButton *infoButton = new QPushButton("游戏说明", this);
     infoButton->setGeometry(START_WIDTH*0.5-75, START_HEIGHT*0.5+140, 150, 100);
     connect(infoButton, &QPushButton::clicked, this, &MainWindow::showGameInfo);
+
+    QPushButton *shopButton = new QPushButton("商店", this);
+    shopButton->setGeometry(START_WIDTH * 0.5 - 75, START_HEIGHT * 0.5 + 210, 150, 100);
+    connect(shopButton, &QPushButton::clicked, this, &MainWindow::openShop);
 }

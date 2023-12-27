@@ -134,45 +134,7 @@ void resource::moveWithConveyor(double _rate, double cuttingRate)//int direction
     default:
         break;
     }
-//    if(Map[nextGirdY][nextGridX]!=1&&(nextX%GRID_SIZE==0.5*GRID_SIZE&&nextY%GRID_SIZE==0.5*GRID_SIZE)){
-//        int clockwiseDirections[] = {90, 270}; // 顺时针方向数组
-//        for (int i = 0; i < 2; i++) {
-//            int newDirection = (direction + clockwiseDirections[i]) % 360;
-//            int newX = currentX;
-//            int newY = currentY;
-//            int nextGRIDX=currentX/GRID_SIZE;
-//            int nextGRIDY=currentY/GRID_SIZE;
-//            switch (newDirection) {
-//            case 0: // 向上
-//                newY -= rate;
-//                nextGRIDY--;
-//                break;
-//            case 90: // 向右
-//                newX += rate;
-//                nextGRIDX++;
-//                break;
-//            case 180: // 向下
-//                newY += rate;
-//                nextGRIDY++;
-//                break;
-//            case 270: // 向左
-//                newX -= rate;
-//                nextGRIDX--;
-//                break;
-//            default:
-//                break;
-//            }
 
-//            // 检查新方向上的下一个位置是否是传送带
-//            if (Map[nextGRIDY][nextGRIDX] == 1) {
-//                // 更新位置和方向
-//                currentX = newX;
-//                currentY = newY;
-//                this->direction = newDirection;
-//                break;
-//            }
-//    }
-//    }
     // 检查下一个位置是否是资源所在地段
     if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == -3||Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == -4)
     {
@@ -180,21 +142,51 @@ void resource::moveWithConveyor(double _rate, double cuttingRate)//int direction
         currentX=nextX;
         currentY=nextY;
     }
-    else if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == 1)//代表0度
+//    else if(direction<360&&(Map[nextY/GRID_SIZE][nextX/GRID_SIZE]!=direction&&Map[nextY/GRID_SIZE][nextX/GRID_SIZE]!=(direction+1))){
+
+//    }
+    else if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == 1||Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == 90||Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == 180||Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == 270)//代表0-270度
     {
         state=1;
-        direction=0;
-        //更新位置
-        currentX=nextX;
-        currentY=nextY;
+        if (direction==0&&Map[nextY/GRID_SIZE][nextX/GRID_SIZE]!=1||direction==90&&Map[nextY/GRID_SIZE][nextX/GRID_SIZE]!=90||direction==180&&Map[nextY/GRID_SIZE][nextX/GRID_SIZE]!=180||direction==270&&Map[nextY/GRID_SIZE][nextX/GRID_SIZE]!=270){
+            //现在和未来的传送带方向不对 并且都是基础方向
+
+        }
+        else if(direction>270&&!match1(direction,Map[nextY/GRID_SIZE][nextX/GRID_SIZE])){
+            //转弯但是转过去的传送带不对
+
+        }
+        else{
+            if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE]==1){
+                direction=0;
+            }
+            else{
+                direction=Map[nextY/GRID_SIZE][nextX/GRID_SIZE];
+            }
+
+            //更新位置
+            currentX=nextX;
+            currentY=nextY;
+        }
+
     }
-    else if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE] %90==0 &&Map[nextY/GRID_SIZE][nextX/GRID_SIZE]!=0)//代表90-990度
+    else if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE] %90==0 &&Map[nextY/GRID_SIZE][nextX/GRID_SIZE]!=0&&Map[nextY/GRID_SIZE][nextX/GRID_SIZE]>270)//代表360-990度
     {
         state=1;
-        direction=Map[nextY/GRID_SIZE][nextX/GRID_SIZE];
-        //更新位置
-        currentX=nextX;
-        currentY=nextY;
+
+        if (!match2(direction,Map[nextY/GRID_SIZE][nextX/GRID_SIZE])){
+            //之前是直线或转弯 碰到转弯不对应
+
+        }
+        else{
+
+            direction=Map[nextY/GRID_SIZE][nextX/GRID_SIZE];
+
+
+            //更新位置
+            currentX=nextX;
+            currentY=nextY;
+        }
     }
     else if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == 3)//下一个位置垃圾桶
     {
@@ -259,6 +251,7 @@ void resource::moveWithConveyor(double _rate, double cuttingRate)//int direction
     else if(Map[nextY/GRID_SIZE][nextX/GRID_SIZE] ==-5 )//交付中心
     {
         donePieces++;
+        gold+=goldReward;
         if(kind==1){
             if (resource1Needed!=0){
                 resource1Needed--;
@@ -277,48 +270,45 @@ void resource::moveWithConveyor(double _rate, double cuttingRate)//int direction
         state=0;
         return;
     }
-    else // 只是没找到工具 则顺时针寻找有没有传送带
+    else
     {
 
-        int clockwiseDirections[] = {90, 270}; // 顺时针方向数组
-
-        for (int i = 0; i < 2; i++) {
-            int newDirection = (direction + clockwiseDirections[i]) % 360;
-            int newX = currentX;
-            int newY = currentY;
-            int nextGRIDX=currentX/GRID_SIZE;
-            int nextGRIDY=currentY/GRID_SIZE;
-            switch (newDirection) {
-            case 0: // 向上
-                newY -= rate;
-                nextGRIDY--;
-                break;
-            case 90: // 向右
-                newX += rate;
-                nextGRIDX++;
-                break;
-            case 180: // 向下
-                newY += rate;
-                nextGRIDY++;
-                break;
-            case 270: // 向左
-                newX -= rate;
-                nextGRIDX--;
-                break;
-            default:
-                break;
-            }
-
-            // 检查新方向上的下一个位置是否是传送带
-            if (Map[nextGRIDY][nextGRIDX] == 1) {
-                // 更新位置和方向
-                currentX = newX;
-                currentY = newY;
-                this->direction = newDirection;
-                break;
-            }
-        }
     }
 
 
+}
+
+bool resource::match1(int dir, int next){
+    if((dir==360||dir==630)&&next!=90){
+        return false;
+    }
+    if((dir==450||dir==900)&&next!=1){
+        return false;
+    }
+    if((dir==540||dir==810)&&next!=180){
+        return false;
+    }
+    if((dir==720||dir==990)&&next!=270){
+        return false;
+    }
+    return true;
+}
+bool resource::match2(int dir, int next){
+    if((dir==0||dir==450||dir==900)&&next!=360&&next!=990&&next!=dir){
+        qDebug()<<"1";
+        return false;
+    }
+    if((dir==90||dir==360||dir==630)&&next!=450&&next!=540&&next!=dir){
+        qDebug()<<"2";
+        return false;
+    }
+    if((dir==180||dir==540||dir==810)&&next!=630&&next!=720&&next!=dir){
+        qDebug()<<"3";
+        return false;
+    }
+    if((dir==270||dir==720||dir==990)&&next!=810&&next!=900&&next!=dir){
+        qDebug()<<"4";return false;
+    }
+
+    return true;
 }

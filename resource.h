@@ -18,6 +18,14 @@ public:
     void moveWithConveyor(double _rate, double cuttingRate);//direction 0 向上     90 向右     180 down      270  left  360 + specific
     void draw(QPainter&);
     int state=1;//1代表显示  0 代表不显示需要被删除  2 表示不显示不需要删除
+    int getX(){
+        return currentX;
+    }
+    int getY(){
+        return currentY;
+    }
+    bool match1(int dir, int next);
+    bool match2(int dir, int next);
 signals:
     void resourceGenerated(resource* newResource);
 };

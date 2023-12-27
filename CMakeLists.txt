@@ -58,6 +58,7 @@ else()
             config.h
             global.h global.cpp
             task.h task.cpp
+            shopwindow.h shopwindow.cpp
 
 
 

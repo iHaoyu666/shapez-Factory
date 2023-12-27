@@ -32,5 +32,7 @@ public slots:
     void loadGame();
 
     void showGameInfo();
+
+    void openShop();
 };
 #endif // MAINWINDOW_H

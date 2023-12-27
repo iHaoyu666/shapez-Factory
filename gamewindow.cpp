@@ -55,7 +55,7 @@ gamewindow::gamewindow(QWidget *parent)
 
     refreshTimer->start(50);  // 设置刷新间隔，单位为毫秒
     //三个速率标签
-    miningRateLabel->setText("开采速率: " + QString::number(miningRate));
+    miningRateLabel->setText("开采速率: " + QString::number(miningRate/1000.0));
     miningRateLabel->move(GAME_WIDTH-3*GRID_SIZE, GAME_HEIGHT-GRID_SIZE);
     cuttingRateLabel->setText("剪切速率: " + QString::number(cuttingRate));
     cuttingRateLabel->move(GAME_WIDTH-3*GRID_SIZE, GAME_HEIGHT-2*GRID_SIZE);
@@ -64,12 +64,11 @@ gamewindow::gamewindow(QWidget *parent)
     //金钱标签
     moneyLable->move(20, 40);
     moneyLable->setFont(QFont("黑体", 20));
-    moneyLable->setText(QString("金钱：%1").arg(money));
+    moneyLable->setText(QString("金币：%1").arg(money));
     //交付数量标签
     centerLable->move(GAME_WIDTH/2-GRID_SIZE, GAME_HEIGHT/2-GRID_SIZE);
     centerLable->setFont(QFont("黑体", 7));
     centerLable->setText(QString("已交付数量:%1").arg(donePieces));
-    centerLable->adjustSize();
 
     resource1Lable->move(GAME_WIDTH/2-GRID_SIZE, GAME_HEIGHT/2-GRID_SIZE+20);
     resource1Lable->setFont(QFont("黑体", 7));
@@ -83,6 +82,9 @@ gamewindow::gamewindow(QWidget *parent)
     resource1clipLable->setFont(QFont("黑体", 7));
     resource1clipLable->setText(QString("半圆未交付数量：%1").arg(resource1clipNeeded));
 
+    doneLabel->move(GAME_WIDTH/2-GRID_SIZE, GAME_HEIGHT/2-GRID_SIZE+80);
+    doneLabel->setFont(QFont("黑体", 7));
+    doneLabel->setText(QString("共交付数量：%1").arg(donePieces));
     enhancementHub = new EnhancementHub(this);
     connect(this, &gamewindow::taskCompleted, this, &gamewindow::showEnhancementHub);
     // 连接EnhancementHub窗口的信号到GameWindow的槽函数
@@ -97,11 +99,12 @@ void gamewindow::paintEvent(QPaintEvent* event) {
     drawMap(painter);
     drawToolSelection(painter);
     drawresource(painter);
-    moneyLable->setText(QString("金钱：%1").arg(money));
+    moneyLable->setText(QString("金钱：%1").arg(gold));
     centerLable->setText(QString("任务%1").arg(task->getCnt()));
     resource1Lable->setText(QString("圆形未交付数量：%1").arg(resource1Needed));
     resource2Lable->setText(QString("方形未交付数量：%1").arg(resource2Needed));
     resource1clipLable->setText(QString("半圆未交付数量：%1").arg(resource1clipNeeded));
+    doneLabel->setText(QString("共交付数量：%1").arg(donePieces));
     if (GetKeyState('R')<0&&isMousePressed) {
         QDateTime currentTime = QDateTime::currentDateTime();
         if (lastRotationTime.isNull() || lastRotationTime.msecsTo(currentTime) >= rotationInterval) {
@@ -370,9 +373,23 @@ void gamewindow::removeTool(int x, int y) {
             if(tool->getType()!=ToolType::Excavator)
             {
                 Map[y/GRID_SIZE][x/GRID_SIZE]=0;
+                if(tool->getType()==ToolType::Conveyor){//如果是传送带 把上面东西删了
+                    for(resource* res:resources){
+                        if (res->getX()/GRID_SIZE==x/GRID_SIZE&&res->getY()/GRID_SIZE==y/GRID_SIZE){
+                            res->state=0;
+                        }
+                    }
+                }
             }
-            else{
-                Map[y/GRID_SIZE][x/GRID_SIZE]=Map[y/GRID_SIZE][x/GRID_SIZE]*(-1);
+            else{//开采器则需要保留原来的东西 并且这个位置不再开始生成
+                Map[y/GRID_SIZE][x/GRID_SIZE]=Map[y/GRID_SIZE][x/GRID_SIZE]+2;
+                for(resource* res:resources){//如果开采器上面有生成的
+                    if (res->getX()/GRID_SIZE==x/GRID_SIZE&&res->getY()/GRID_SIZE==y/GRID_SIZE){
+                        res->state=0;
+                    }
+                }
+                miningElements.erase(std::remove(miningElements.begin(),miningElements.end(),
+                                                 std::make_tuple(QPoint(x-x%GRID_SIZE+0.5*GRID_SIZE, y-y%GRID_SIZE+0.5*GRID_SIZE), Map[y/GRID_SIZE][x/GRID_SIZE]*(-1), tool->getRotation())),miningElements.end());
             }
             tools.erase(it);
             delete tool;  // 释放内存
@@ -473,7 +490,7 @@ void gamewindow::increaseMiningRate()
     miningRate/=1.2;
     generateTimer->setInterval(miningRate);
     enhancementHub->hide();
-    miningRateLabel->setText("Mining Rate: " + QString::number(miningRate));
+    miningRateLabel->setText("开采间隔: " + QString::number(miningRate/1000.0));
 
 }
 
@@ -481,7 +498,7 @@ void gamewindow::increaseConveyorRate()
 {
     movingRate+=1;
     enhancementHub->hide();
-    movingRateLabel->setText("Moving Rate: " + QString::number(movingRate));
+    movingRateLabel->setText("移动速率: " + QString::number(movingRate));
 }
 
 void gamewindow::increaseCuttingRate()
@@ -489,7 +506,7 @@ void gamewindow::increaseCuttingRate()
     cuttingRate+=1;
     enhancementHub->hide();
 
-    cuttingRateLabel->setText("Cutting Rate: " + QString::number(cuttingRate));
+    cuttingRateLabel->setText("剪切速率: " + QString::number(cuttingRate));
 
 }
 void gamewindow::showEnhancementHub()

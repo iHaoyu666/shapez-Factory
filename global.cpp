@@ -20,7 +20,8 @@ int Map[mapHeight][mapWidth]{
 
 };
 int donePieces=0;
-int money=0;
+int gold=0;
 int resource1Needed=0;
 int resource2Needed=0;
 int resource1clipNeeded=0;
+int goldReward=1;
