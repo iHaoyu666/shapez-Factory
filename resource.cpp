@@ -46,7 +46,7 @@ void resource::moveWithConveyor(double _rate, double cuttingRate)//int direction
 {
 //    // 更新资源的速率和方向
 //    this->direction = direction;
-
+    qDebug()<<rate<<currentX<<currentY;
     if(state==2){
         rate=cuttingRate;
     }else{
@@ -177,6 +177,9 @@ void resource::moveWithConveyor(double _rate, double cuttingRate)//int direction
         if (!match2(direction,Map[nextY/GRID_SIZE][nextX/GRID_SIZE])){
             //之前是直线或转弯 碰到转弯不对应
 
+        }
+        else if(direction==Map[nextY/GRID_SIZE][nextX/GRID_SIZE]&&(currentX/GRID_SIZE!=nextX/GRID_SIZE||currentY/GRID_SIZE!=nextY/GRID_SIZE)){
+            //前后都是转弯格子里面 如果这意味着有新的格子 那么不动
         }
         else{
 

@@ -17,7 +17,6 @@ public:
         XGrid=x/GRID_SIZE;
         YGrid=y/GRID_SIZE;
     }
-
     void rotate(int angle) {
         rotationAngle += angle;
         if (type!=ToolType::Conveyor){

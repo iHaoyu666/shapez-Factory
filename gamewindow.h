@@ -14,11 +14,13 @@
 #include "global.h"
 #include "enhancementhub.h"
 #include "task.h"
+#include <QPushButton>
 class gamewindow : public QWidget
 {
     Q_OBJECT
 public:
     explicit gamewindow(QWidget *parent = nullptr);
+    ~gamewindow();
     void drawMap(QPainter&);            //画出地图
     void drawToolSelection(QPainter&); //画出选择框
     void drawresource(QPainter&);   //画资源
@@ -27,9 +29,10 @@ public:
     void addTool(Tool* tool, int x, int y);  // 添加工具
     void removeTool(int x, int y);  // 移除工具
     bool hasTool(int x, int y) const;  // 检查是否存在工具
-    QTimer *refreshTimer;
+    QTimer* refreshTimer;
     QTimer* keyCheckTimer;
     QTimer* generateTimer;
+    QTimer* moveTimer;
     QLabel* moneyLable = new QLabel(this);
     QLabel* centerLable = new QLabel(this);
     QLabel* resource1Lable = new QLabel(this);
@@ -39,6 +42,7 @@ public:
     QLabel* cuttingRateLabel = new QLabel(this);
     QLabel* movingRateLabel = new QLabel(this);
     QLabel* doneLabel = new QLabel(this);
+
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
@@ -53,6 +57,7 @@ private:
     QDateTime lastRotationTime;
     // 最小时间间隔（毫秒）
     int rotationInterval = 125;
+    int moveInterval=70;
     //金钱数
     int money=0;
     //交付数
@@ -61,6 +66,7 @@ private:
     double miningRate=3000; //开采速度 除以1000表示秒数 用于给generateTimer参数
     double cuttingRate=1.0; //切割速度
     int flag=0;
+    int warningflag=0;
     bool isRKeyPressed=false;
     bool isMousePressed = false;
     std::vector<resource*> resources;
@@ -95,11 +101,13 @@ private:
 signals:
     void resourceBeingExcavated(int kind, int x, int y, int angle);
     void taskCompleted();//一个任务完成信号
+    void windowclose();//窗口关闭
 public slots:
     void increaseMiningRate();
     void increaseConveyorRate();
     void increaseCuttingRate();
     void showEnhancementHub();
+    void askforclose();
 
 
 };

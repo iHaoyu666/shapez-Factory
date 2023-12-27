@@ -26,8 +26,8 @@ private:
     QPushButton *miningSiteButton;
     QPushButton *goldRewardButton;
 
-    int deliveryCenterLevel;
-    int miningSiteLevel;
+
+
 
 
 };

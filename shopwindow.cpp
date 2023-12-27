@@ -10,7 +10,7 @@ ShopWindow::ShopWindow(QWidget *parent)
     setWindowTitle("商店");
     deliveryCenterLevel = 1; // 初始交付中心等级
     miningSiteLevel = 1; // 初始开采物所在地块等级
-    goldReward = 10; // 初始金币奖励等级
+
 
     // 创建标签
     coinLabel = new QLabel("金币数目: " + QString::number(gold), this);
@@ -26,12 +26,12 @@ ShopWindow::ShopWindow(QWidget *parent)
     goldRewardLabel->setGeometry(10, 130, 480, 30);
 
     // 创建按钮
-    deliveryCenterButton = new QPushButton("升级交付中心 消耗200", this);
+    deliveryCenterButton = new QPushButton("升级交付中心 消耗600", this);
 
     deliveryCenterButton->setGeometry(50, 170, 400, 80);
     connect(deliveryCenterButton, &QPushButton::clicked, this, &ShopWindow::upgradeDeliveryCenter);
 
-    miningSiteButton = new QPushButton("升级开采物所在地块 消耗300", this);
+    miningSiteButton = new QPushButton("升级开采物所在地块 消耗100", this);
     miningSiteButton->setGeometry(50, 260, 400, 80);
     connect(miningSiteButton, &QPushButton::clicked, this, &ShopWindow::upgradeMiningSite);
 
@@ -67,9 +67,21 @@ ShopWindow::ShopWindow(QWidget *parent)
 void ShopWindow::upgradeDeliveryCenter()
 {
     // 执行升级和一系列操作
-    if(gold>=200&&deliveryCenterLevel==1){
+    if(gold>=600&&deliveryCenterLevel==1){
         deliveryCenterLevel++;
         //修改map
+        Map[10][17]=-5;
+        Map[10][18]=-5;
+        Map[10][19]=-5;
+        Map[10][20]=-5;
+        Map[11][17]=-5;
+        Map[11][20]=-5;
+        Map[12][17]=-5;
+        Map[12][20]=-5;
+        Map[13][17]=-5;
+        Map[13][18]=-5;
+        Map[13][19]=-5;
+        Map[13][20]=-5;
     }
 
 
@@ -80,13 +92,37 @@ void ShopWindow::upgradeDeliveryCenter()
 void ShopWindow::upgradeMiningSite()
 {
     // 执行升级和一系列操作
-    if(gold>=300){
+    if(gold>=100){
         miningSiteLevel++;
         //修改map
+        // 随机选择行和列的索引
+        int cnt=1;
+        int row = std::rand() % GAME_HEIGHT;
+        int col = std::rand() % GAME_WIDTH;
+        while(cnt>0){
+            // 根据选中的格子进行赋值
+            if (Map[row/GRID_SIZE][col/GRID_SIZE] == 0 &&
+                (row+col)%2==1)
+            {
+                Map[row/GRID_SIZE][col/GRID_SIZE] = -1;
+
+                cnt--;
+            }
+            else if(Map[row/GRID_SIZE][col/GRID_SIZE] == 0 &&
+                       (row+col)%2==0)
+            {
+                Map[row/GRID_SIZE][col/GRID_SIZE] = -2;
+
+
+                cnt--;
+            }
+            else{
+            }
+        }
+
+
     }
 
-
-    // TODO: 执行其他操作
 
     // 更新标签文本
     miningSiteLabel->setText("开采物所在地块等级: " + QString::number(miningSiteLevel));
@@ -96,7 +132,7 @@ void ShopWindow::upgradeGoldReward()
 {
     // 执行升级和一系列操作
     if(gold>=500){
-        goldReward+=10;
+        goldReward+=5;
     }
 
     // 更新标签文本

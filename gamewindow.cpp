@@ -8,7 +8,7 @@
 #include "map.h"
 #include <QTimer>
 #include <QDebug>
-
+#include <QMessageBox>
 #define MouClickRegion(X, Y, Width, Height)     \
 (ev->x() >= (X) && ev->x() <= (X) + (Width) &&  \
 ev->y() >= (Y) && ev->y() <= (Y) + (Height))
@@ -27,14 +27,25 @@ gamewindow::gamewindow(QWidget *parent)
     setFixedSize(GAME_WIDTH,GAME_HEIGHT);
     setWindowTitle(GAME_TITLE);
     setMouseTracking(true);
-//    connect(this, &gamewindow::resourceBeingExcavated, this,[&](int kind, int x, int y, int angle) {
-//        miningElements.push_back(std::make_tuple(QPoint(x, y), kind, angle));
-//    });
+
+    QPushButton *backButton = new QPushButton("返回主菜单",this); //返回按钮
+    backButton->setGeometry(0,GAME_HEIGHT-60,120,50);
+    backButton->show();
+    connect(backButton, &QPushButton::clicked, this, &gamewindow::askforclose);
     QPainter painter(this);
 
     refreshTimer = new QTimer(this);
+    refreshTimer->start(50);  // 设置刷新间隔，单位为毫秒
     generateTimer= new QTimer(this);
     generateTimer->start(miningRate);//生成资源速度
+    moveTimer=new QTimer(this);
+    moveTimer->start(moveInterval);
+    connect(moveTimer, &QTimer::timeout, this, [&](){
+    //更新资源
+        for (auto resource: resources){
+        resource->moveWithConveyor(movingRate, cuttingRate);}
+    });
+
     connect(generateTimer, &QTimer::timeout, this, [&]{
         for (const auto& element : qAsConst(miningElements)) {
             // 获取位置、种类和方向信息
@@ -53,7 +64,7 @@ gamewindow::gamewindow(QWidget *parent)
     task->nextTask();//初始化任务
     connect(refreshTimer, &QTimer::timeout, this, QOverload<>::of(&gamewindow::update));
 
-    refreshTimer->start(50);  // 设置刷新间隔，单位为毫秒
+
     //三个速率标签
     miningRateLabel->setText("开采速率: " + QString::number(miningRate/1000.0));
     miningRateLabel->move(GAME_WIDTH-3*GRID_SIZE, GAME_HEIGHT-GRID_SIZE);
@@ -62,29 +73,37 @@ gamewindow::gamewindow(QWidget *parent)
     movingRateLabel->setText("移动速率: " + QString::number(movingRate));
     movingRateLabel->move(GAME_WIDTH-3*GRID_SIZE, GAME_HEIGHT-3*GRID_SIZE);
     //金钱标签
-    moneyLable->move(20, 40);
+    moneyLable->setGeometry(20, 40, 200, 30);
     moneyLable->setFont(QFont("黑体", 20));
     moneyLable->setText(QString("金币：%1").arg(money));
     //交付数量标签
-    centerLable->move(GAME_WIDTH/2-GRID_SIZE, GAME_HEIGHT/2-GRID_SIZE);
-    centerLable->setFont(QFont("黑体", 7));
+    centerLable->move(GAME_WIDTH-5*GRID_SIZE, GRID_SIZE);
+    centerLable->setFont(QFont("黑体", 10));
     centerLable->setText(QString("已交付数量:%1").arg(donePieces));
+    centerLable->setStyleSheet("background-color: transparent;");
 
-    resource1Lable->move(GAME_WIDTH/2-GRID_SIZE, GAME_HEIGHT/2-GRID_SIZE+20);
-    resource1Lable->setFont(QFont("黑体", 7));
+    resource1Lable->move(GAME_WIDTH-5*GRID_SIZE, GRID_SIZE+20);
+    resource1Lable->setFont(QFont("黑体", 10));
     resource1Lable->setText(QString("圆形未交付数量：%1").arg(resource1Needed));
+    resource1Lable->setStyleSheet("background-color: transparent;");
 
-    resource2Lable->move(GAME_WIDTH/2-GRID_SIZE, GAME_HEIGHT/2-GRID_SIZE+40);
-    resource2Lable->setFont(QFont("黑体", 7));
+    resource2Lable->move(GAME_WIDTH-5*GRID_SIZE, GRID_SIZE+40);
+    resource2Lable->setFont(QFont("黑体", 10));
     resource2Lable->setText(QString("方形未交付数量：%1").arg(resource2Needed));
+    resource2Lable->setStyleSheet("background-color: transparent;");
 
-    resource1clipLable->move(GAME_WIDTH/2-GRID_SIZE, GAME_HEIGHT/2-GRID_SIZE+60);
-    resource1clipLable->setFont(QFont("黑体", 7));
+    resource1clipLable->move(GAME_WIDTH-5*GRID_SIZE, GRID_SIZE+60);
+    resource1clipLable->setFont(QFont("黑体", 10));
     resource1clipLable->setText(QString("半圆未交付数量：%1").arg(resource1clipNeeded));
+    resource1clipLable->setStyleSheet("background-color: transparent;");
 
-    doneLabel->move(GAME_WIDTH/2-GRID_SIZE, GAME_HEIGHT/2-GRID_SIZE+80);
-    doneLabel->setFont(QFont("黑体", 7));
+    donePieces=0;
+
+    doneLabel->setFont(QFont("黑体", 10));
+    doneLabel->setGeometry(GAME_WIDTH-5*GRID_SIZE, GRID_SIZE+80, 300, 30);
     doneLabel->setText(QString("共交付数量：%1").arg(donePieces));
+    doneLabel->setStyleSheet("background-color: transparent;");
+
     enhancementHub = new EnhancementHub(this);
     connect(this, &gamewindow::taskCompleted, this, &gamewindow::showEnhancementHub);
     // 连接EnhancementHub窗口的信号到GameWindow的槽函数
@@ -94,7 +113,6 @@ gamewindow::gamewindow(QWidget *parent)
 }
 
 void gamewindow::paintEvent(QPaintEvent* event) {
-
     QPainter painter(this);
     drawMap(painter);
     drawToolSelection(painter);
@@ -147,7 +165,7 @@ void gamewindow::paintEvent(QPaintEvent* event) {
         tool->draw(painter);
     }
     for (auto resource: resources){//更新资源
-        resource->moveWithConveyor(movingRate, cuttingRate);
+//        resource->moveWithConveyor(movingRate, cuttingRate);
         if(resource->state==0){
             removeresource(resource);
             delete resource;
@@ -234,6 +252,8 @@ void gamewindow::generateResource(int kind, int x, int y, int angle) {
 //    }
 //}
 void gamewindow::drawMap(QPainter& painter){
+    // 设置背景颜色为浅灰色
+    this->setStyleSheet("background-color: rgb(240, 240, 240);");
     // 格子大小
     int gridSize = GRID_SIZE;
 
@@ -252,15 +272,22 @@ void gamewindow::drawMap(QPainter& painter){
     }
 
     //加载交付中心图片
-    QPixmap deliveryCenterPixmap(":/res/pic/buildings/3.png");
-
+    QPixmap deliveryCenterPixmapbig(":/res/pic/buildings/3.png");
+    QPixmap deliveryCenterPixmapsmall(":/res/pic/buildings/3-0.png");
     // 计算交付中心的位置
-    int centerX = width() / 2 - 2* gridSize -10;
-    int centerY = height() / 2 - 2* gridSize -10;
+    int centerX = width() / 2 - deliveryCenterLevel* gridSize -10;
+    int centerY = height() / 2 - deliveryCenterLevel* gridSize -10;
 
     // 绘制交付中心图片
-    QRect deliveryCenterRect(centerX, centerY, gridSize * 4+20, gridSize * 4+20);
-    painter.drawPixmap(deliveryCenterRect, deliveryCenterPixmap);
+    if(deliveryCenterLevel==1){
+        QRect deliveryCenterRect(centerX, centerY, gridSize * 2+20, gridSize * 2+20);
+        painter.drawPixmap(deliveryCenterRect, deliveryCenterPixmapsmall);
+    }
+    else{
+        QRect deliveryCenterRect(centerX, centerY, gridSize * 4+20, gridSize * 4+20);
+        painter.drawPixmap(deliveryCenterRect, deliveryCenterPixmapbig);
+    }
+
 
 
 }
@@ -490,7 +517,7 @@ void gamewindow::increaseMiningRate()
     miningRate/=1.2;
     generateTimer->setInterval(miningRate);
     enhancementHub->hide();
-    miningRateLabel->setText("开采间隔: " + QString::number(miningRate/1000.0));
+    miningRateLabel->setText("开采间隔秒数: " + QString::number(miningRate/1000.0));
 
 }
 
@@ -513,4 +540,47 @@ void gamewindow::showEnhancementHub()
 {
     // 显示EnhancementHub窗口
     enhancementHub->show();
+}
+void gamewindow::askforclose(){
+    // 显示询问对话框
+    QMessageBox::StandardButton reply = QMessageBox::question(nullptr, "提醒", "你确定要返回主菜单吗？你的局部属性将重置，但你的金币将保留", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+    // 根据用户选择来决定是否关闭窗口
+    if (reply == QMessageBox::Yes) {
+
+        emit windowclose();
+        this->deleteLater();
+    }
+
+
+}
+gamewindow::~gamewindow(){
+    for(resource* res:resources){
+        delete res;
+
+    }
+    for(Tool* tool:tools){
+        switch(tool->getType()){
+        case ToolType::Conveyor:
+            Map[tool->getGridPos().y()][tool->getGridPos().x()]=0;
+            break;
+        case ToolType::Cutter:
+            Map[tool->getGridPos().y()][tool->getGridPos().x()]=0;
+            break;
+        case ToolType::Excavator:
+            if(Map[tool->getGridPos().y()][tool->getGridPos().x()]==-3||Map[tool->getGridPos().y()][tool->getGridPos().x()]==-4){
+                Map[tool->getGridPos().y()][tool->getGridPos().x()]+=2;
+            }
+            else{
+                Map[tool->getGridPos().y()][tool->getGridPos().x()]=0;
+            }
+            break;
+        case ToolType::GarbageCan:
+            Map[tool->getGridPos().y()][tool->getGridPos().x()]=0;
+            break;
+        }
+
+        delete tool;
+
+    }
+
 }

@@ -22,6 +22,7 @@ void MainWindow::startGame() {
     gamewindow *gwindow=new gamewindow;
     gwindow->show();
     this->hide();
+    connect(gwindow,&gamewindow::windowclose,this, &MainWindow::show);
 }
 
 void MainWindow::loadGame() {
@@ -71,6 +72,7 @@ void MainWindow::initScene()
     infoButton->setGeometry(START_WIDTH*0.5-75, START_HEIGHT*0.5+140, 150, 100);
     connect(infoButton, &QPushButton::clicked, this, &MainWindow::showGameInfo);
 
+    // 创建商店按钮
     QPushButton *shopButton = new QPushButton("商店", this);
     shopButton->setGeometry(START_WIDTH * 0.5 - 75, START_HEIGHT * 0.5 + 210, 150, 100);
     connect(shopButton, &QPushButton::clicked, this, &MainWindow::openShop);

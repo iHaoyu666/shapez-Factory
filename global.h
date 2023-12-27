@@ -9,4 +9,6 @@ extern int resource1Needed;
 extern int resource2Needed;
 extern int resource1clipNeeded;
 extern int goldReward;
+extern int deliveryCenterLevel;
+extern int miningSiteLevel;
 #endif // GLOBAL_H
