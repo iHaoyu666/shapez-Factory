@@ -32,20 +32,33 @@ void MainWindow::startGame() {
 
 void MainWindow::loadGame() {
     QMessageBox::information(this, "继续游戏", "存档读取中……");
-    QString filePath=":/player1.txt";
+    QString filePath = "./player1.txt";
     QFile file(filePath);
-    if (file.open(QIODevice::ReadOnly)) {
-        QDataStream stream(&file);
-        for (int i = 0; i < mapHeight; ++i) {
-            for (int j = 0; j < mapWidth; ++j) {
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QTextStream stream(&file);
+
+        // 读取地图数据
+        for (int i = 0; i < mapHeight; ++i)
+        {
+            for (int j = 0; j < mapWidth; ++j)
+            {
                 stream >> Map[i][j];
             }
         }
+
+        // 读取其他数据
         stream >> gold;
         stream >> goldReward;
         stream >> deliveryCenterLevel;
         stream >> miningSiteLevel;
+
         file.close();
+        qDebug() << "Data loaded.";
+    }
+    else
+    {
+        qDebug() << "Unable to open the file for reading.";
     }
     gamewindow *gwindow=new gamewindow;
     gwindow->show();
@@ -125,21 +138,38 @@ void MainWindow::initScene()
 
 
 void MainWindow::saveData() {               //存档
-    QString filePath=":/player1.txt";
+
+    QString filePath = "./player1.txt";
     QFile file(filePath);
-    if (file.open(QIODevice::WriteOnly)) {
-        QDataStream stream(&file);
-        for (int i = 0; i < mapHeight; ++i) {
-            for (int j = 0; j < mapWidth; ++j) {
-                stream << Map[i][j];
+    if (file.open(QIODevice::WriteOnly))
+    {
+        QTextStream stream(&file);
+
+        // 写入地图数据
+        for (int i = 0; i < mapHeight; ++i)
+        {
+            for (int j = 0; j < mapWidth; ++j)
+            {
+                stream << Map[i][j] << " ";
             }
+            stream << Qt::endl;
         }
-        stream << gold;
-        stream << goldReward;
-        stream << deliveryCenterLevel;
-        stream << miningSiteLevel;
+
+        // 写入其他数据
+        stream << gold << Qt::endl;
+        stream << goldReward << Qt::endl;
+        stream << deliveryCenterLevel << Qt::endl;
+        stream << miningSiteLevel << Qt::endl;
         file.close();
+        qDebug() << "Data saved.";
     }
+    else
+    {
+        qDebug() << "Unable to open the file for writing.";
+    }
+    QString runPath = QCoreApplication::applicationDirPath() + "/player1.txt";
+    runPath.replace(QString("/"),QString("\\"));
+    qDebug() << runPath;
 }
 
 void MainWindow::newgameclean(){    //重置全局属性

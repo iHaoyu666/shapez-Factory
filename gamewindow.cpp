@@ -351,12 +351,16 @@ void gamewindow::drawresource(QPainter& painter){
 }
 
 void gamewindow::addTool(Tool* tool, int x, int y) {
+    if(tool->getType()!=ToolType::Excavator && Map[y/GRID_SIZE][x/GRID_SIZE]<0){
+        return;
+    }
     tools.push_back(tool);
     switch (tool->getType()) {
     case ToolType::Conveyor:
         if(tool->getRotation()==0){
             Map[y/GRID_SIZE][x/GRID_SIZE]=1;//表示直线向上的传送带并且与0区分开
         }
+
         else{
             Map[y/GRID_SIZE][x/GRID_SIZE]=tool->getRotation();
         }

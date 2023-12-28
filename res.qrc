@@ -26,5 +26,6 @@
         <file>res/pic/pieces/circle1downhalf.png</file>
         <file>res/pic/pieces/circle1lefthalf.png</file>
         <file>res/pic/pieces/circle1righthalf.png</file>
+        <file>player1.txt</file>
     </qresource>
 </RCC>
