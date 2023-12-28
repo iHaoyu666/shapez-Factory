@@ -8,7 +8,9 @@ enum class ToolType {
     Conveyor,
     Cutter,
     GarbageCan,
-    Excavator
+    Excavator,
+    Stack,
+    RotateTool
 };
 class Tool
 {

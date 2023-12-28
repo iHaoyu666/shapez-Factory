@@ -26,24 +26,26 @@ void resource::draw(QPainter &painter){
             case 0: // 向上
                 pixmap = &resource1clipImage3;
                 size=QSize(0.25*GRID_SIZE, 0.5*GRID_SIZE);
-
+                pixNum=3;
 //                painter.drawPixmap(currentX-0.25*GRID_SIZE, currentY-0.25*GRID_SIZE, 0.25*GRID_SIZE, 0.5*GRID_SIZE, resource1clipImage3);
                 break;
             case 90: // 向右
                 pixmap = &resource1clipImage1;
                 size=QSize(0.5*GRID_SIZE, 0.25*GRID_SIZE);
-
+                pixNum=1;
 //                painter.drawPixmap(currentX-0.25*GRID_SIZE, currentY-0.25*GRID_SIZE, 0.5*GRID_SIZE, 0.25*GRID_SIZE, resource1clipImage1);
                 break;
             case 180:  //向下
                 pixmap = &resource1clipImage4;
                 size=QSize(0.25*GRID_SIZE, 0.5*GRID_SIZE);
+                pixNum=4;
 
 //                painter.drawPixmap(currentX, currentY-0.25*GRID_SIZE, 0.25*GRID_SIZE, 0.5*GRID_SIZE, resource1clipImage4);
                 break;
             case 270:  //向左
                 pixmap = &resource1clipImage2;
                 size=QSize(0.5*GRID_SIZE, 0.25*GRID_SIZE);
+                pixNum=2;
 
 //                painter.drawPixmap(currentX-0.25*GRID_SIZE, currentY, 0.5*GRID_SIZE, 0.25*GRID_SIZE, resource1clipImage2);
                 break;
@@ -54,6 +56,22 @@ void resource::draw(QPainter &painter){
             painter.drawPixmap(QRect(QPoint(currentX-5, currentY-5), size),*pixmap);
         }
         else{
+            switch (pixNum) {
+            case 1:
+                pixmap=&resource1clipImage1;
+                break;
+            case 2:
+                pixmap=&resource1clipImage2;
+                break;
+            case 3:
+                pixmap=&resource1clipImage3;
+                break;
+            case 4:
+                pixmap=&resource1clipImage4;
+                break;
+            default:
+                break;
+            }
             painter.drawPixmap(QRect(QPoint(currentX-5, currentY-5), size), *pixmap);
         }
 
@@ -66,25 +84,25 @@ void resource::draw(QPainter &painter){
             case 0: // 向上
                 pixmap = &resource1clipImage4;
                 size=QSize(0.25*GRID_SIZE, 0.5*GRID_SIZE);
-
+                pixNum=4;
                 //                painter.drawPixmap(currentX-0.25*GRID_SIZE, currentY-0.25*GRID_SIZE, 0.25*GRID_SIZE, 0.5*GRID_SIZE, resource1clipImage3);
                 break;
             case 90: // 向右
                 pixmap = &resource1clipImage2;
                 size=QSize(0.5*GRID_SIZE, 0.25*GRID_SIZE);
-
+                pixNum=2;
                 //                painter.drawPixmap(currentX-0.25*GRID_SIZE, currentY-0.25*GRID_SIZE, 0.5*GRID_SIZE, 0.25*GRID_SIZE, resource1clipImage1);
                 break;
             case 180:  //向下
                 pixmap = &resource1clipImage3;
                 size=QSize(0.25*GRID_SIZE, 0.5*GRID_SIZE);
-
+                pixNum=3;
                 //                painter.drawPixmap(currentX, currentY-0.25*GRID_SIZE, 0.25*GRID_SIZE, 0.5*GRID_SIZE, resource1clipImage4);
                 break;
             case 270:  //向左
                 pixmap = &resource1clipImage1;
                 size=QSize(0.5*GRID_SIZE, 0.25*GRID_SIZE);
-
+                pixNum=1;
                 //                painter.drawPixmap(currentX-0.25*GRID_SIZE, currentY, 0.5*GRID_SIZE, 0.25*GRID_SIZE, resource1clipImage2);
                 break;
             default:
@@ -94,6 +112,22 @@ void resource::draw(QPainter &painter){
             painter.drawPixmap(QRect(QPoint(currentX-5, currentY-5), size),*pixmap);
         }
         else{
+            switch (pixNum) {
+            case 1:
+                pixmap=&resource1clipImage1;
+                break;
+            case 2:
+                pixmap=&resource1clipImage2;
+                break;
+            case 3:
+                pixmap=&resource1clipImage3;
+                break;
+            case 4:
+                pixmap=&resource1clipImage4;
+                break;
+            default:
+                break;
+            }
             painter.drawPixmap(QRect(QPoint(currentX-5, currentY-5), size), *pixmap);
         }
 
@@ -207,6 +241,7 @@ void resource::moveWithConveyor(double _rate, double cuttingRate)//int direction
 //    }
     else if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == 1||Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == 90||Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == 180||Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == 270)//代表0-270度
     {
+        rotateFlag=0;
         state=1;
         if (direction==0&&Map[nextY/GRID_SIZE][nextX/GRID_SIZE]!=1||direction==90&&Map[nextY/GRID_SIZE][nextX/GRID_SIZE]!=90||direction==180&&Map[nextY/GRID_SIZE][nextX/GRID_SIZE]!=180||direction==270&&Map[nextY/GRID_SIZE][nextX/GRID_SIZE]!=270){
             //现在和未来的传送带方向不对 并且都是基础方向
@@ -233,7 +268,7 @@ void resource::moveWithConveyor(double _rate, double cuttingRate)//int direction
     else if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE] %90==0 &&Map[nextY/GRID_SIZE][nextX/GRID_SIZE]!=0&&Map[nextY/GRID_SIZE][nextX/GRID_SIZE]>270)//代表360-990度
     {
         state=1;
-
+        rotateFlag=0;
         if (!match2(direction,Map[nextY/GRID_SIZE][nextX/GRID_SIZE])){
             //之前是直线或转弯 碰到转弯不对应
 
@@ -253,11 +288,13 @@ void resource::moveWithConveyor(double _rate, double cuttingRate)//int direction
     }
     else if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == 3)//下一个位置垃圾桶
     {
+
         state=0;
         return;
     }
     else if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == 4)//下一个位置剪切器剪切头
     {
+        rotateFlag=0;
         if(kind==1||kind==3){
             switch (direction)
             {
@@ -347,9 +384,67 @@ void resource::moveWithConveyor(double _rate, double cuttingRate)//int direction
     }
     else if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == 5&&kind==4)//下一个位置剪切器没用的口 但是是被剪切的来了
     {
+        rotateFlag=0;
         currentX=nextX;
         currentY=nextY;
-        qDebug()<<currentX<<currentY;
+
+    }
+    else if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == 6)//下一个位置堆叠器主体头
+    {
+        rotateFlag=0;
+        state=2;
+        currentX=nextX;
+        currentY=nextY;
+
+    }
+    else if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == 7)//下一个位置堆叠器副头
+    {
+        rotateFlag=0;
+        state=2;
+        switch (direction){
+        case 0:
+            currentX=nextX-GRID_SIZE;
+            break;
+
+        case 90:
+            currentY=nextY-GRID_SIZE;
+            break;
+
+        case 180:
+            currentX=nextX+GRID_SIZE;
+            break;
+
+        case 270:
+            currentY=nextY+GRID_SIZE;
+            break;
+        }
+    }
+    else if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == 8)//下一个位置旋转器
+    {
+
+        state=2;
+        currentX=nextX;
+        currentY=nextY;
+        if (rotateFlag==0){
+            if(pixNum==1){
+                pixNum=4;
+                size=QSize(0.25*GRID_SIZE, 0.5*GRID_SIZE);
+            }
+            else if(pixNum==2){
+                pixNum=3;
+                size=QSize(0.25*GRID_SIZE, 0.5*GRID_SIZE);
+            }
+            else if(pixNum==3){
+                pixNum=1;
+                size=QSize(0.5*GRID_SIZE, 0.25*GRID_SIZE);
+            }
+            else if(pixNum==4){
+                pixNum=2;
+                size=QSize(0.5*GRID_SIZE, 0.25*GRID_SIZE);
+            }
+            rotateFlag=1;
+        }
+
     }
     else if(Map[nextY/GRID_SIZE][nextX/GRID_SIZE] ==-5 )//交付中心
     {

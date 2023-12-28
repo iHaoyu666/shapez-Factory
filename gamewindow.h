@@ -15,6 +15,7 @@
 #include "enhancementhub.h"
 #include "task.h"
 #include <QPushButton>
+#include "rotatetool.h"
 class gamewindow : public QWidget
 {
     Q_OBJECT
@@ -78,7 +79,7 @@ private:
     /*int Map[mapHeight][mapWidth]={0};*///记录地图上的数据 可以外部导入导出
     //0 表示 空    1 表示 传送带 2 表示开采器  3 表示 垃圾桶 4 表示剪切器主体头 5 表示剪切器垃圾头
     //-1 表示可开采矿物1  -2 代表可开采矿物2  -5代表交付中心 -3 表式矿物1开采中 -4表示 矿物2在开采中
-
+    //6 表示堆叠器主体头    7表示堆叠器副头  8 表示顺时针旋转器
 //    int Map[mapHeight][mapWidth]{
 //        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 //        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1, 0, 0, 0, 0},

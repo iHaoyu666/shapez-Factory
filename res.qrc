@@ -27,5 +27,7 @@
         <file>res/pic/pieces/circle1lefthalf.png</file>
         <file>res/pic/pieces/circle1righthalf.png</file>
         <file>player1.txt</file>
+        <file>res/pic/buildings/StackTool.png</file>
+        <file>res/pic/buildings/RotateTool.png</file>
     </qresource>
 </RCC>

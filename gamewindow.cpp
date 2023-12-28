@@ -9,6 +9,7 @@
 #include <QTimer>
 #include <QDebug>
 #include <QMessageBox>
+#include "stacktool.h"
 #define MouClickRegion(X, Y, Width, Height)     \
 (ev->x() >= (X) && ev->x() <= (X) + (Width) &&  \
 ev->y() >= (Y) && ev->y() <= (Y) + (Height))
@@ -307,7 +308,8 @@ void gamewindow::drawToolSelection(QPainter& painter){
     QPixmap CutterPixmap(":/res/pic/buildings/1.png");
     QPixmap ExcavatorPixmap(":/res/pic/buildings/2.png");
     QPixmap GarbageCanPixmap(":/res/pic/buildings/4.png");
-
+    QPixmap StackPixmap(":/res/pic/buildings/StackTool.png");
+    QPixmap RotatePixmap(":/res/pic/buildings/RotateTool.png");
     QColor toolbarColor(128, 128, 128, 128);
     // 绘制工具栏背景
     painter.setBrush(toolbarColor);
@@ -317,16 +319,19 @@ void gamewindow::drawToolSelection(QPainter& painter){
     // 绘制工具图片
     int toolSize = GRID_SIZE; // 工具图片的大小
     int toolSpacing = 50; // 工具图片之间的间距
-    //  0 传送带       1 剪切器       2 开采器       3 垃圾桶
+    //  0 传送带       1 剪切器       2 开采器       3 垃圾桶  4  叠加器     5  顺时针旋转器
     QPoint tool0Pos(toolbarX + (toolbarWidth - toolSize * 4 - toolSpacing * 3) / 2, toolbarY + (toolbarHeight - toolSize) / 2);
     QPoint tool1Pos = tool0Pos + QPoint(toolSize + toolSpacing, 0);
     QPoint tool2Pos = tool1Pos + QPoint(toolSize * 2 + toolSpacing, 0);
     QPoint tool3Pos = tool2Pos + QPoint(toolSize + toolSpacing, 0);
-
+    QPoint tool4Pos = tool3Pos + QPoint(toolSize + toolSpacing, 0);
+    QPoint tool5Pos = tool4Pos + QPoint(toolSize * 2 + toolSpacing, 0);
     painter.drawPixmap(tool0Pos, ConveyorPixmap.scaled(toolSize, toolSize, Qt::KeepAspectRatio));
     painter.drawPixmap(tool1Pos, CutterPixmap.scaled(toolSize * 2, toolSize, Qt::KeepAspectRatio));
     painter.drawPixmap(tool2Pos, ExcavatorPixmap.scaled(toolSize, toolSize, Qt::KeepAspectRatio));
     painter.drawPixmap(tool3Pos, GarbageCanPixmap.scaled(toolSize, toolSize, Qt::KeepAspectRatio));
+    painter.drawPixmap(tool4Pos, StackPixmap.scaled(toolSize*2, toolSize, Qt::KeepAspectRatio));
+    painter.drawPixmap(tool5Pos, RotatePixmap.scaled(toolSize, toolSize, Qt::KeepAspectRatio));
 }
 
 void gamewindow::drawresource(QPainter& painter){
@@ -400,6 +405,24 @@ void gamewindow::addTool(Tool* tool, int x, int y) {
             Map[y/GRID_SIZE-1][x/GRID_SIZE]=5;
         }
         break;
+    case ToolType::Stack:
+        Map[y/GRID_SIZE][x/GRID_SIZE]=6;
+        if(tool->getRotation()==0){
+            Map[y/GRID_SIZE][x/GRID_SIZE+1]=7;
+        }
+        if(tool->getRotation()==90){
+            Map[y/GRID_SIZE+1][x/GRID_SIZE]=7;
+        }
+        if(tool->getRotation()==180){
+            Map[y/GRID_SIZE][x/GRID_SIZE-1]=7;
+        }
+        if(tool->getRotation()==270){
+            Map[y/GRID_SIZE-1][x/GRID_SIZE]=7;
+        }
+        break;
+    case ToolType::RotateTool:
+        Map[y/GRID_SIZE][x/GRID_SIZE]=8;
+        break;
     default:
         break;
     }
@@ -470,11 +493,13 @@ void gamewindow::mousePressEvent(QMouseEvent *event) {
         // 绘制工具图片
         int toolSize = GRID_SIZE; // 工具图片的大小
         int toolSpacing = 50; // 工具图片之间的间距
-        //  0 传送带       1 剪切器       2 开采器       3 垃圾桶
+        //  0 传送带       1 剪切器       2 开采器       3 垃圾桶   4  堆叠器
         QPoint tool0Pos(toolbarX + (toolbarWidth - toolSize * 4 - toolSpacing * 3) / 2, toolbarY + (toolbarHeight - toolSize) / 2);
         QPoint tool1Pos = tool0Pos + QPoint(toolSize + toolSpacing, 0);
         QPoint tool2Pos = tool1Pos + QPoint(toolSize * 2 + toolSpacing, 0);
         QPoint tool3Pos = tool2Pos + QPoint(toolSize + toolSpacing, 0);
+        QPoint tool4Pos = tool3Pos + QPoint(toolSize + toolSpacing, 0);
+        QPoint tool5Pos = tool4Pos + QPoint(toolSize * 2 + toolSpacing, 0);
         // 检查是否点击了工具栏上的工具
         if (mouseY >= toolbarY && mouseY <= toolbarY + toolbarHeight) {
             if (mouseX >= tool0Pos.x() && mouseX <= tool0Pos.x() + toolSize) {
@@ -485,6 +510,11 @@ void gamewindow::mousePressEvent(QMouseEvent *event) {
                 selectedTool = new ExtractorTool(mouseX, mouseY, 0);
             } else if (mouseX >= tool3Pos.x() && mouseX <= tool3Pos.x() + toolSize) {
                 selectedTool = new TrashTool(mouseX, mouseY, 0);
+            }else if (mouseX >= tool4Pos.x() && mouseX <= tool4Pos.x() + toolSize) {
+                selectedTool = new StackTool(mouseX, mouseY, 0);
+            }
+            else if (mouseX >= tool5Pos.x() && mouseX <= tool5Pos.x() + toolSize) {
+                selectedTool = new RotateTool(mouseX, mouseY, 0);
             }
             if (selectedTool) {
                 selectedToolOffset=QPoint(0.5*GRID_SIZE, 0.5*GRID_SIZE);
@@ -577,6 +607,18 @@ gamewindow::~gamewindow(){
             break;
         case ToolType::Cutter:
             Map[tool->getGridPos().y()][tool->getGridPos().x()]=0;
+            if(tool->getRotation()==0){
+                Map[tool->getGridPos().y()][tool->getGridPos().x()+1]=0;
+            }
+            if(tool->getRotation()==90){
+                Map[tool->getGridPos().y()+1][tool->getGridPos().x()]=0;
+            }
+            if(tool->getRotation()==180){
+                Map[tool->getGridPos().y()][tool->getGridPos().x()-1]=0;
+            }
+            if(tool->getRotation()==270){
+                Map[tool->getGridPos().y()-1][tool->getGridPos().x()]=0;
+            }
             break;
         case ToolType::Excavator:
             if(Map[tool->getGridPos().y()][tool->getGridPos().x()]==-3||Map[tool->getGridPos().y()][tool->getGridPos().x()]==-4){
@@ -589,7 +631,26 @@ gamewindow::~gamewindow(){
         case ToolType::GarbageCan:
             Map[tool->getGridPos().y()][tool->getGridPos().x()]=0;
             break;
+        case ToolType::Stack:
+            Map[tool->getGridPos().y()][tool->getGridPos().x()]=0;
+            if(tool->getRotation()==0){
+                Map[tool->getGridPos().y()][tool->getGridPos().x()+1]=0;
+            }
+            if(tool->getRotation()==90){
+                Map[tool->getGridPos().y()+1][tool->getGridPos().x()]=0;
+            }
+            if(tool->getRotation()==180){
+                Map[tool->getGridPos().y()][tool->getGridPos().x()-1]=0;
+            }
+            if(tool->getRotation()==270){
+                Map[tool->getGridPos().y()-1][tool->getGridPos().x()]=0;
+            }
+            break;
+        case ToolType::RotateTool:
+            Map[tool->getGridPos().y()][tool->getGridPos().x()]=0;
+            break;
         }
+
 
         delete tool;
 

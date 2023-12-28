@@ -16,7 +16,8 @@ class resource : public QObject
     int chooseFlag=0;
     QPixmap* pixmap;
     QSize size;
-    int rectNum=0;
+    int pixNum=0;
+    int rotateFlag=0;
 public:
     explicit resource(int kind, int x, int y, int direction): currentX(x), currentY(y), direction(direction), kind(kind){};
     void moveWithConveyor(double _rate, double cuttingRate);//direction 0 向上     90 向右     180 down      270  left  360 + specific
