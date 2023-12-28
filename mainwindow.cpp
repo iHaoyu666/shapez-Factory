@@ -71,9 +71,12 @@ void MainWindow::showGameInfo() {
     QMessageBox::information(this, "游戏说明", "This is a game. Have fun!");//此处在设计完之后添加游戏说明
 }
 
+
+
+
 void MainWindow::openShop()
 {
-    QMessageBox::information(this, "商店", "打开商店窗口");
+//    QMessageBox::information(this, "商店", "打开商店窗口");
 
     // 创建商店窗口
     ShopWindow *shopWindow = new ShopWindow(this);
@@ -82,6 +85,7 @@ void MainWindow::openShop()
         points.push_back(QPoint(x, y));
 
     });
+    connect(shopWindow, &ShopWindow::closewindow, this, &MainWindow::saveData);
 }
 
 void MainWindow::initScene()
@@ -99,7 +103,7 @@ void MainWindow::initScene()
     setAutoFillBackground(true);
     setPalette(palette);
     // 创建开始游戏按钮
-    QPushButton *startButton = new QPushButton("开始游戏", this);
+    QPushButton *startButton = new QPushButton("新游戏", this);
     startButton->setGeometry(START_WIDTH * 0.5-75, START_HEIGHT*0.5, 150, 100);
     connect(startButton, &QPushButton::clicked, this, &MainWindow::startGame);
 

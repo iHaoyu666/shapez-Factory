@@ -74,7 +74,7 @@ gamewindow::gamewindow(QWidget *parent)
 
 
     //三个速率标签
-    miningRateLabel->setText("开采速率: " + QString::number(miningRate/1000.0));
+    miningRateLabel->setText("开采间隔秒数: " + QString::number(miningRate/1000.0));
     miningRateLabel->move(GAME_WIDTH-3*GRID_SIZE, GAME_HEIGHT-GRID_SIZE);
     cuttingRateLabel->setText("剪切速率: " + QString::number(cuttingRate));
     cuttingRateLabel->move(GAME_WIDTH-3*GRID_SIZE, GAME_HEIGHT-2*GRID_SIZE);
@@ -588,6 +588,64 @@ void gamewindow::askforclose(){
     QMessageBox::StandardButton reply = QMessageBox::question(nullptr, "提醒", "你确定要返回主菜单吗？你的局部属性将重置，但你的金币将保留", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
     // 根据用户选择来决定是否关闭窗口
     if (reply == QMessageBox::Yes) {
+        for(Tool* tool:tools){
+            switch(tool->getType()){
+            case ToolType::Conveyor:
+                Map[tool->getGridPos().y()][tool->getGridPos().x()]=0;
+                break;
+            case ToolType::Cutter:
+                Map[tool->getGridPos().y()][tool->getGridPos().x()]=0;
+                if(tool->getRotation()==0){
+                    Map[tool->getGridPos().y()][tool->getGridPos().x()+1]=0;
+                }
+                if(tool->getRotation()==90){
+                    Map[tool->getGridPos().y()+1][tool->getGridPos().x()]=0;
+                }
+                if(tool->getRotation()==180){
+                    Map[tool->getGridPos().y()][tool->getGridPos().x()-1]=0;
+                }
+                if(tool->getRotation()==270){
+                    Map[tool->getGridPos().y()-1][tool->getGridPos().x()]=0;
+                }
+                break;
+            case ToolType::Excavator:
+                if(Map[tool->getGridPos().y()][tool->getGridPos().x()]==-3||Map[tool->getGridPos().y()][tool->getGridPos().x()]==-4){
+                    Map[tool->getGridPos().y()][tool->getGridPos().x()]+=2;
+                }
+                else{
+                    Map[tool->getGridPos().y()][tool->getGridPos().x()]=0;
+                }
+                break;
+            case ToolType::GarbageCan:
+                Map[tool->getGridPos().y()][tool->getGridPos().x()]=0;
+                break;
+            case ToolType::Stack:
+                Map[tool->getGridPos().y()][tool->getGridPos().x()]=0;
+                if(tool->getRotation()==0){
+                    Map[tool->getGridPos().y()][tool->getGridPos().x()+1]=0;
+                }
+                if(tool->getRotation()==90){
+                    Map[tool->getGridPos().y()+1][tool->getGridPos().x()]=0;
+                }
+                if(tool->getRotation()==180){
+                    Map[tool->getGridPos().y()][tool->getGridPos().x()-1]=0;
+                }
+                if(tool->getRotation()==270){
+                    Map[tool->getGridPos().y()-1][tool->getGridPos().x()]=0;
+                }
+                break;
+            case ToolType::RotateTool:
+                Map[tool->getGridPos().y()][tool->getGridPos().x()]=0;
+                break;
+            }
+
+
+            delete tool;
+
+        }
+        for(resource* res:resources){
+            delete res;
+        }
 
         emit windowclose();
         this->deleteLater();
@@ -595,65 +653,7 @@ void gamewindow::askforclose(){
 
 
 }
-gamewindow::~gamewindow(){
-    for(resource* res:resources){
-        delete res;
-
-    }
-    for(Tool* tool:tools){
-        switch(tool->getType()){
-        case ToolType::Conveyor:
-            Map[tool->getGridPos().y()][tool->getGridPos().x()]=0;
-            break;
-        case ToolType::Cutter:
-            Map[tool->getGridPos().y()][tool->getGridPos().x()]=0;
-            if(tool->getRotation()==0){
-                Map[tool->getGridPos().y()][tool->getGridPos().x()+1]=0;
-            }
-            if(tool->getRotation()==90){
-                Map[tool->getGridPos().y()+1][tool->getGridPos().x()]=0;
-            }
-            if(tool->getRotation()==180){
-                Map[tool->getGridPos().y()][tool->getGridPos().x()-1]=0;
-            }
-            if(tool->getRotation()==270){
-                Map[tool->getGridPos().y()-1][tool->getGridPos().x()]=0;
-            }
-            break;
-        case ToolType::Excavator:
-            if(Map[tool->getGridPos().y()][tool->getGridPos().x()]==-3||Map[tool->getGridPos().y()][tool->getGridPos().x()]==-4){
-                Map[tool->getGridPos().y()][tool->getGridPos().x()]+=2;
-            }
-            else{
-                Map[tool->getGridPos().y()][tool->getGridPos().x()]=0;
-            }
-            break;
-        case ToolType::GarbageCan:
-            Map[tool->getGridPos().y()][tool->getGridPos().x()]=0;
-            break;
-        case ToolType::Stack:
-            Map[tool->getGridPos().y()][tool->getGridPos().x()]=0;
-            if(tool->getRotation()==0){
-                Map[tool->getGridPos().y()][tool->getGridPos().x()+1]=0;
-            }
-            if(tool->getRotation()==90){
-                Map[tool->getGridPos().y()+1][tool->getGridPos().x()]=0;
-            }
-            if(tool->getRotation()==180){
-                Map[tool->getGridPos().y()][tool->getGridPos().x()-1]=0;
-            }
-            if(tool->getRotation()==270){
-                Map[tool->getGridPos().y()-1][tool->getGridPos().x()]=0;
-            }
-            break;
-        case ToolType::RotateTool:
-            Map[tool->getGridPos().y()][tool->getGridPos().x()]=0;
-            break;
-        }
+//gamewindow::~gamewindow(){
 
 
-        delete tool;
-
-    }
-
-}
+//}

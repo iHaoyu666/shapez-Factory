@@ -119,6 +119,8 @@ void ShopWindow::upgradeMiningSite()
                 cnt--;
             }
             else{
+                row = std::rand() % GAME_HEIGHT;
+                col = std::rand() % GAME_WIDTH;
             }
         }
         gold-=100;
@@ -142,4 +144,8 @@ void ShopWindow::upgradeGoldReward()
     // 更新标签文本
     coinLabel->setText("金币数目: "+QString::number(gold));
     goldRewardLabel->setText("开采物交付利润: " + QString::number(goldReward));
+}
+void ShopWindow::closeEvent(QCloseEvent* e){
+    emit closewindow();
+    this->close();
 }

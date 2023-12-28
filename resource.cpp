@@ -232,6 +232,7 @@ void resource::moveWithConveyor(double _rate, double cuttingRate)//int direction
     // 检查下一个位置是否是资源所在地段
     if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == -3||Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == -4)
     {
+        state=2;
         //更新位置
         currentX=nextX;
         currentY=nextY;
@@ -460,7 +461,7 @@ void resource::moveWithConveyor(double _rate, double cuttingRate)//int direction
                 resource2Needed--;
             }
         }
-        if(kind==3){
+        if(kind==3||kind==4){
             if (resource1clipNeeded!=0){
                 resource1clipNeeded--;
             }

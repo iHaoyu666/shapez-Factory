@@ -10,7 +10,7 @@ class ShopWindow : public QMainWindow
     Q_OBJECT
 public:
     explicit ShopWindow(QWidget *parent = nullptr);
-
+    void closeEvent(QCloseEvent* e);
 public slots:
     void upgradeDeliveryCenter();
     void upgradeMiningSite();
@@ -28,7 +28,7 @@ private:
 
 signals:
     void addNewResource(int x, int y);
-
+    void closewindow();
 };
 
 #endif // SHOPWINDOW_H

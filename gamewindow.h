@@ -21,7 +21,7 @@ class gamewindow : public QWidget
     Q_OBJECT
 public:
     explicit gamewindow(QWidget *parent = nullptr);
-    ~gamewindow();
+//    ~gamewindow();
     void drawMap(QPainter&);            //画出地图
     void drawToolSelection(QPainter&); //画出选择框
     void drawresource(QPainter&);   //画资源
