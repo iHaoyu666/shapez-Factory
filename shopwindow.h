@@ -26,9 +26,8 @@ private:
     QPushButton *miningSiteButton;
     QPushButton *goldRewardButton;
 
-
-
-
+signals:
+    void addNewResource(int x, int y);
 
 };
 

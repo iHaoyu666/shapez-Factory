@@ -42,8 +42,15 @@ gamewindow::gamewindow(QWidget *parent)
     moveTimer->start(moveInterval);
     connect(moveTimer, &QTimer::timeout, this, [&](){
     //更新资源
-        for (auto resource: resources){
-        resource->moveWithConveyor(movingRate, cuttingRate);}
+        for (auto res: resources){
+            connect(res, &resource::cuttingResourceGenerated, this, [=](int kind, int x, int y, int direction){
+                resource* newres= new resource(kind, x, y, direction);
+                newres->state=2;
+                resources.push_back(newres);
+
+            });
+            res->moveWithConveyor(movingRate, cuttingRate);
+        }
     });
 
     connect(generateTimer, &QTimer::timeout, this, [&]{
@@ -73,26 +80,26 @@ gamewindow::gamewindow(QWidget *parent)
     movingRateLabel->setText("移动速率: " + QString::number(movingRate));
     movingRateLabel->move(GAME_WIDTH-3*GRID_SIZE, GAME_HEIGHT-3*GRID_SIZE);
     //金钱标签
-    moneyLable->setGeometry(20, 40, 200, 30);
+    moneyLable->setGeometry(20, 40, 200, 50);
     moneyLable->setFont(QFont("黑体", 20));
     moneyLable->setText(QString("金币：%1").arg(money));
     //交付数量标签
-    centerLable->move(GAME_WIDTH-5*GRID_SIZE, GRID_SIZE);
+    centerLable->setGeometry(GAME_WIDTH-5*GRID_SIZE, GRID_SIZE,300,30);
     centerLable->setFont(QFont("黑体", 10));
     centerLable->setText(QString("已交付数量:%1").arg(donePieces));
     centerLable->setStyleSheet("background-color: transparent;");
 
-    resource1Lable->move(GAME_WIDTH-5*GRID_SIZE, GRID_SIZE+20);
+    resource1Lable->setGeometry(GAME_WIDTH-5*GRID_SIZE, GRID_SIZE+20,300,30);
     resource1Lable->setFont(QFont("黑体", 10));
     resource1Lable->setText(QString("圆形未交付数量：%1").arg(resource1Needed));
     resource1Lable->setStyleSheet("background-color: transparent;");
 
-    resource2Lable->move(GAME_WIDTH-5*GRID_SIZE, GRID_SIZE+40);
+    resource2Lable->setGeometry(GAME_WIDTH-5*GRID_SIZE, GRID_SIZE+40,300,30);
     resource2Lable->setFont(QFont("黑体", 10));
     resource2Lable->setText(QString("方形未交付数量：%1").arg(resource2Needed));
     resource2Lable->setStyleSheet("background-color: transparent;");
 
-    resource1clipLable->move(GAME_WIDTH-5*GRID_SIZE, GRID_SIZE+60);
+    resource1clipLable->setGeometry(GAME_WIDTH-5*GRID_SIZE, GRID_SIZE+60,300,30);
     resource1clipLable->setFont(QFont("黑体", 10));
     resource1clipLable->setText(QString("半圆未交付数量：%1").arg(resource1clipNeeded));
     resource1clipLable->setStyleSheet("background-color: transparent;");
@@ -165,7 +172,8 @@ void gamewindow::paintEvent(QPaintEvent* event) {
         tool->draw(painter);
     }
     for (auto resource: resources){//更新资源
-//        resource->moveWithConveyor(movingRate, cuttingRate);
+
+
         if(resource->state==0){
             removeresource(resource);
             delete resource;

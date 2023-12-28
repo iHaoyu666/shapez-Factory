@@ -10,6 +10,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     initScene();
+
+
 }
 
 MainWindow::~MainWindow()
@@ -19,15 +21,37 @@ MainWindow::~MainWindow()
 
 void MainWindow::startGame() {
     QMessageBox::information(this, "开始游戏", "游戏初始化中……");
+    newgameclean();     //重置全局属性
+
     gamewindow *gwindow=new gamewindow;
     gwindow->show();
     this->hide();
     connect(gwindow,&gamewindow::windowclose,this, &MainWindow::show);
+    connect(gwindow,&gamewindow::windowclose,this, &MainWindow::saveData);//游戏一返回主菜单就存档
 }
 
 void MainWindow::loadGame() {
     QMessageBox::information(this, "继续游戏", "存档读取中……");
-    //读取存档操作 TODO
+    QString filePath=":/player1.txt";
+    QFile file(filePath);
+    if (file.open(QIODevice::ReadOnly)) {
+        QDataStream stream(&file);
+        for (int i = 0; i < mapHeight; ++i) {
+            for (int j = 0; j < mapWidth; ++j) {
+                stream >> Map[i][j];
+            }
+        }
+        stream >> gold;
+        stream >> goldReward;
+        stream >> deliveryCenterLevel;
+        stream >> miningSiteLevel;
+        file.close();
+    }
+    gamewindow *gwindow=new gamewindow;
+    gwindow->show();
+    this->hide();
+    connect(gwindow,&gamewindow::windowclose,this, &MainWindow::show);
+    connect(gwindow,&gamewindow::windowclose,this, &MainWindow::saveData);//游戏一返回主菜单就存档
 }
 
 void MainWindow::showGameInfo() {
@@ -41,6 +65,10 @@ void MainWindow::openShop()
     // 创建商店窗口
     ShopWindow *shopWindow = new ShopWindow(this);
     shopWindow->show();
+    connect(shopWindow, &ShopWindow::addNewResource, this, [=](int x, int y) {
+        points.push_back(QPoint(x, y));
+
+    });
 }
 
 void MainWindow::initScene()
@@ -77,3 +105,70 @@ void MainWindow::initScene()
     shopButton->setGeometry(START_WIDTH * 0.5 - 75, START_HEIGHT * 0.5 + 210, 150, 100);
     connect(shopButton, &QPushButton::clicked, this, &MainWindow::openShop);
 }
+//void MainWindow::loadData() {   //读档
+//    QString filePath="player1.txt";
+//    QFile file(filePath);
+//    if (file.open(QIODevice::ReadOnly)) {
+//        QDataStream stream(&file);
+//        for (int i = 0; i < mapHeight; ++i) {
+//            for (int j = 0; j < mapWidth; ++j) {
+//                stream >> Map[i][j];
+//            }
+//        }
+//        stream >> gold;
+//        stream >> goldReward;
+//        stream >> deliveryCenterLevel;
+//        stream >> miningSiteLevel;
+//        file.close();
+//    }
+//}
+
+
+void MainWindow::saveData() {               //存档
+    QString filePath=":/player1.txt";
+    QFile file(filePath);
+    if (file.open(QIODevice::WriteOnly)) {
+        QDataStream stream(&file);
+        for (int i = 0; i < mapHeight; ++i) {
+            for (int j = 0; j < mapWidth; ++j) {
+                stream << Map[i][j];
+            }
+        }
+        stream << gold;
+        stream << goldReward;
+        stream << deliveryCenterLevel;
+        stream << miningSiteLevel;
+        file.close();
+    }
+}
+
+void MainWindow::newgameclean(){    //重置全局属性
+    gold=0;
+    goldReward=10;
+    deliveryCenterLevel=1;
+    miningSiteLevel=1;
+    Map[10][17]=0;
+    Map[10][18]=0;
+    Map[10][19]=0;
+    Map[10][20]=0;
+    Map[11][17]=0;
+    Map[11][20]=0;
+    Map[12][17]=0;
+    Map[12][20]=0;
+    Map[13][17]=0;
+    Map[13][18]=0;
+    Map[13][19]=0;
+    Map[13][20]=0;
+    for(QPoint point:points){
+        Map[point.x()][point.y()]=0;
+    }
+}
+
+
+
+
+
+
+
+
+

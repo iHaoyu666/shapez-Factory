@@ -10,9 +10,13 @@ class resource : public QObject
     Q_OBJECT
     int currentX, currentY;
 
-    int kind; // 1代表为resource1 2 代表为resource2 3 表示 resource1 被切成了 一半
+    int kind; // 1代表为resource1 2 代表为resource2 3 表示 resource1 被切成了 一半  4表示被切成的另一半
     double rate = 1.0; //随传送带运行的速率
     int direction; // 行动方向
+    int chooseFlag=0;
+    QPixmap* pixmap;
+    QSize size;
+    int rectNum=0;
 public:
     explicit resource(int kind, int x, int y, int direction): currentX(x), currentY(y), direction(direction), kind(kind){};
     void moveWithConveyor(double _rate, double cuttingRate);//direction 0 向上     90 向右     180 down      270  left  360 + specific
@@ -28,6 +32,7 @@ public:
     bool match2(int dir, int next);
 signals:
     void resourceGenerated(resource* newResource);
+    void cuttingResourceGenerated(int kind, int x, int y, int direction);
 };
 
 #endif // RESOURCE_H

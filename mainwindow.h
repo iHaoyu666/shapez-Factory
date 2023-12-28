@@ -20,19 +20,24 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void initScene();
+    void newgameclean();
 private:
     Ui::MainWindow *ui;
-
+    std::vector<QPoint> points;
 //protected:
 //    void paintEvent(QPaintEvent* event);
 
 public slots:
-    void startGame();
+    void startGame();       //新游戏
 
-    void loadGame();
+    void loadGame();        //读取存档
 
     void showGameInfo();
 
     void openShop();
+
+    void saveData();    //保存游戏
+
+//    void loadData();    //读取存档
 };
 #endif // MAINWINDOW_H

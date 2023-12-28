@@ -82,10 +82,12 @@ void ShopWindow::upgradeDeliveryCenter()
         Map[13][18]=-5;
         Map[13][19]=-5;
         Map[13][20]=-5;
+        gold-=600;
     }
 
 
     // 更新标签文本
+    coinLabel->setText("金币数目: "+QString::number(gold));
     deliveryCenterLabel->setText("交付中心等级: " + QString::number(deliveryCenterLevel));
 }
 
@@ -105,26 +107,27 @@ void ShopWindow::upgradeMiningSite()
                 (row+col)%2==1)
             {
                 Map[row/GRID_SIZE][col/GRID_SIZE] = -1;
-
+                emit addNewResource(row/GRID_SIZE, col/GRID_SIZE);
                 cnt--;
             }
             else if(Map[row/GRID_SIZE][col/GRID_SIZE] == 0 &&
                        (row+col)%2==0)
             {
                 Map[row/GRID_SIZE][col/GRID_SIZE] = -2;
-
+                emit addNewResource(row/GRID_SIZE, col/GRID_SIZE);
 
                 cnt--;
             }
             else{
             }
         }
-
+        gold-=100;
 
     }
 
 
     // 更新标签文本
+    coinLabel->setText("金币数目: "+QString::number(gold));
     miningSiteLabel->setText("开采物所在地块等级: " + QString::number(miningSiteLevel));
 }
 
@@ -133,8 +136,10 @@ void ShopWindow::upgradeGoldReward()
     // 执行升级和一系列操作
     if(gold>=500){
         goldReward+=5;
+        gold-=500;
     }
 
     // 更新标签文本
+    coinLabel->setText("金币数目: "+QString::number(gold));
     goldRewardLabel->setText("开采物交付利润: " + QString::number(goldReward));
 }
