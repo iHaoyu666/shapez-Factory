@@ -16,6 +16,7 @@
 #include "task.h"
 #include <QPushButton>
 #include "rotatetool.h"
+#include <QSoundEffect>
 class gamewindow : public QWidget
 {
     Q_OBJECT
@@ -43,6 +44,10 @@ public:
     QLabel* cuttingRateLabel = new QLabel(this);
     QLabel* movingRateLabel = new QLabel(this);
     QLabel* doneLabel = new QLabel(this);
+    QSoundEffect *selecttool;
+    QSoundEffect *bgm;
+    QSoundEffect *tooldelete;
+    QSoundEffect *toolputdown;
 
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;

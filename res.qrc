@@ -29,5 +29,13 @@
         <file>player1.txt</file>
         <file>res/pic/buildings/StackTool.png</file>
         <file>res/pic/buildings/RotateTool.png</file>
+        <file>res/music/bgm.mp3</file>
+        <file>res/music/goldComsumed.mp3</file>
+        <file>res/music/selectTool.mp3</file>
+        <file>res/music/toolputdown.wav</file>
+        <file>res/music/bgminwav.wav</file>
+        <file>res/music/consumed.wav</file>
+        <file>res/music/toolselect.wav</file>
+        <file>res/music/tooldelete.wav</file>
     </qresource>
 </RCC>

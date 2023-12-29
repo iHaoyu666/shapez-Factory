@@ -11,6 +11,11 @@ ShopWindow::ShopWindow(QWidget *parent)
     deliveryCenterLevel = 1; // 初始交付中心等级
     miningSiteLevel = 1; // 初始开采物所在地块等级
 
+    //准备音效
+    moneyconsumed=new QSoundEffect;
+    moneyconsumed->setSource(QUrl::fromLocalFile(":/res/music/consumed.wav"));
+    moneyconsumed->setLoopCount(1);  //循环次数
+    moneyconsumed->setVolume(0.3f); //音量  0~1之间
 
     // 创建标签
     coinLabel = new QLabel("金币数目: " + QString::number(gold), this);
@@ -69,6 +74,7 @@ void ShopWindow::upgradeDeliveryCenter()
     // 执行升级和一系列操作
     if(gold>=600&&deliveryCenterLevel==1){
         deliveryCenterLevel++;
+        moneyconsumed->play();
         //修改map
         Map[10][17]=-5;
         Map[10][18]=-5;
@@ -95,6 +101,7 @@ void ShopWindow::upgradeMiningSite()
 {
     // 执行升级和一系列操作
     if(gold>=100){
+        moneyconsumed->play();
         miningSiteLevel++;
         //修改map
         // 随机选择行和列的索引
@@ -137,6 +144,7 @@ void ShopWindow::upgradeGoldReward()
 {
     // 执行升级和一系列操作
     if(gold>=500){
+        moneyconsumed->play();
         goldReward+=5;
         gold-=500;
     }

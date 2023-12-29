@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QLabel>
 #include <QPushButton>
-
+#include <QSoundEffect>
 class ShopWindow : public QMainWindow
 {
     Q_OBJECT
@@ -21,7 +21,7 @@ private:
     QLabel *deliveryCenterLabel;
     QLabel *miningSiteLabel;
     QLabel *goldRewardLabel;
-
+    QSoundEffect *moneyconsumed;
     QPushButton *deliveryCenterButton;
     QPushButton *miningSiteButton;
     QPushButton *goldRewardButton;

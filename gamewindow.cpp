@@ -10,6 +10,9 @@
 #include <QDebug>
 #include <QMessageBox>
 #include "stacktool.h"
+#include <QSound>
+#include <QMediaPlayer>
+#include <QSoundEffect>
 #define MouClickRegion(X, Y, Width, Height)     \
 (ev->x() >= (X) && ev->x() <= (X) + (Width) &&  \
 ev->y() >= (Y) && ev->y() <= (Y) + (Height))
@@ -25,6 +28,28 @@ int toolbarY = GAME_HEIGHT - toolbarHeight - 20; // 距离底部一定的间距
 gamewindow::gamewindow(QWidget *parent)
     : QWidget(parent)
 {
+
+    bgm=new QSoundEffect;
+    bgm->setSource(QUrl::fromLocalFile(":/res/music/bgminwav.wav"));
+    bgm->setLoopCount(10);  //循环次数
+    bgm->setVolume(0.25f); //音量  0~1之间
+    bgm->play();
+
+    selecttool =new QSoundEffect;
+    selecttool->setSource(QUrl::fromLocalFile(":/res/music/toolselect.wav"));
+    selecttool->setLoopCount(1);  //循环次数
+    selecttool->setVolume(0.3f); //音量  0~1之间
+
+    tooldelete=new QSoundEffect;
+    tooldelete->setSource(QUrl::fromLocalFile(":/res/music/tooldelete.wav"));
+    tooldelete->setLoopCount(1);  //循环次数
+    tooldelete->setVolume(0.2f); //音量  0~1之间
+
+    toolputdown=new QSoundEffect;
+    toolputdown->setSource(QUrl::fromLocalFile(":/res/music/toolputdown.wav"));
+    toolputdown->setLoopCount(1);  //循环次数
+    toolputdown->setVolume(0.2f); //音量  0~1之间
+
     setFixedSize(GAME_WIDTH,GAME_HEIGHT);
     setWindowTitle(GAME_TITLE);
     setMouseTracking(true);
@@ -320,7 +345,7 @@ void gamewindow::drawToolSelection(QPainter& painter){
     int toolSize = GRID_SIZE; // 工具图片的大小
     int toolSpacing = 50; // 工具图片之间的间距
     //  0 传送带       1 剪切器       2 开采器       3 垃圾桶  4  叠加器     5  顺时针旋转器
-    QPoint tool0Pos(toolbarX + (toolbarWidth - toolSize * 4 - toolSpacing * 3) / 2, toolbarY + (toolbarHeight - toolSize) / 2);
+    QPoint tool0Pos(toolbarX + (toolbarWidth - toolSize * 6 - toolSpacing * 5) / 2, toolbarY + (toolbarHeight - toolSize) / 2);
     QPoint tool1Pos = tool0Pos + QPoint(toolSize + toolSpacing, 0);
     QPoint tool2Pos = tool1Pos + QPoint(toolSize * 2 + toolSpacing, 0);
     QPoint tool3Pos = tool2Pos + QPoint(toolSize + toolSpacing, 0);
@@ -360,6 +385,7 @@ void gamewindow::addTool(Tool* tool, int x, int y) {
         return;
     }
     tools.push_back(tool);
+    toolputdown->play();
     switch (tool->getType()) {
     case ToolType::Conveyor:
         if(tool->getRotation()==0){
@@ -454,6 +480,7 @@ void gamewindow::removeTool(int x, int y) {
                                                  std::make_tuple(QPoint(x-x%GRID_SIZE+0.5*GRID_SIZE, y-y%GRID_SIZE+0.5*GRID_SIZE), Map[y/GRID_SIZE][x/GRID_SIZE]*(-1), tool->getRotation())),miningElements.end());
             }
             tools.erase(it);
+            tooldelete->play();
             delete tool;  // 释放内存
             // 根据位置，执行相应操作
             break;
@@ -494,7 +521,7 @@ void gamewindow::mousePressEvent(QMouseEvent *event) {
         int toolSize = GRID_SIZE; // 工具图片的大小
         int toolSpacing = 50; // 工具图片之间的间距
         //  0 传送带       1 剪切器       2 开采器       3 垃圾桶   4  堆叠器
-        QPoint tool0Pos(toolbarX + (toolbarWidth - toolSize * 4 - toolSpacing * 3) / 2, toolbarY + (toolbarHeight - toolSize) / 2);
+        QPoint tool0Pos(toolbarX + (toolbarWidth - toolSize * 6 - toolSpacing * 5) / 2, toolbarY + (toolbarHeight - toolSize) / 2);
         QPoint tool1Pos = tool0Pos + QPoint(toolSize + toolSpacing, 0);
         QPoint tool2Pos = tool1Pos + QPoint(toolSize * 2 + toolSpacing, 0);
         QPoint tool3Pos = tool2Pos + QPoint(toolSize + toolSpacing, 0);
@@ -516,7 +543,11 @@ void gamewindow::mousePressEvent(QMouseEvent *event) {
             else if (mouseX >= tool5Pos.x() && mouseX <= tool5Pos.x() + toolSize) {
                 selectedTool = new RotateTool(mouseX, mouseY, 0);
             }
+
+
+
             if (selectedTool) {
+                selecttool->play();
                 selectedToolOffset=QPoint(0.5*GRID_SIZE, 0.5*GRID_SIZE);
                 isMousePressed=true;
                 }
