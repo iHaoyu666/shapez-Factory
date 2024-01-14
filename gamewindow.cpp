@@ -186,36 +186,6 @@ void gamewindow::paintEvent(QPaintEvent* event) {
         }
     }
 
-//    if (GetKeyState('ctrl') < 0 && isMousePressed&& selectedTool->getType()==ToolType::Conveyor){
-//        std::vector<std::pair<int, int>> path; // 保存经过的格子坐标
-//        QPoint mousePos = mapFromGlobal(QCursor::pos());
-//        int startX = mousePos.x()/GRID_SIZE;
-//        int startY = mousePos.y()/GRID_SIZE;
-
-//        int prevX = startX;
-//        int prevY = startY;
-//        path.push_back(std::make_pair(startX, startY)); // 将起始格子坐标添加到路径中
-
-//        while (isMousePressed) {
-//            int mouseX = mousePos.x()/GRID_SIZE; // 获取鼠标当前所在的格子坐标
-//            int mouseY = mousePos.y()/GRID_SIZE;
-
-//            // 判断是否换了格子
-//            if (mouseX != prevX || mouseY != prevY) {
-//                // 添加当前格子坐标到路径中
-//                path.push_back(std::make_pair(mouseX, mouseY));
-//            }
-
-
-
-//            // 更新前一个格子坐标
-//            prevX = mouseX;
-//            prevY = mouseY;
-//        }
-
-//        // 将记录的格子放置在传送带上
-//        placeConveyorOnPath(path);
-//    }
     for (const auto& tool : tools){//画出所有工具
         tool->draw(painter);
     }
@@ -584,6 +554,16 @@ void gamewindow::mouseMoveEvent(QMouseEvent *event) {
         selectedTool->getPosition() = QPoint(mouseX, mouseY);
         selectedTool->setGridPos(mouseX,mouseY);
 //        update();
+
+        if (GetKeyState('F')<0&&isMousePressed&&selectedTool->getType()==ToolType::Conveyor){
+                Tool* newtool=new TranslatorTool(mouseX,mouseY,selectedTool->getRotation());
+                if(!hasTool(mouseX,mouseY)){
+                    addTool(newtool,mouseX, mouseY);
+                }
+                else{
+                    delete newtool;
+                }
+        }
     }
 }
 
