@@ -10,8 +10,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     initScene();
-
-
 }
 
 MainWindow::~MainWindow()
@@ -68,7 +66,12 @@ void MainWindow::loadGame() {
 }
 
 void MainWindow::showGameInfo() {
-    QMessageBox::information(this, "游戏说明", "This is a game. Have fun!");//此处在设计完之后添加游戏说明
+    QMessageBox::information(this, "游戏说明",
+"《异形工厂》是一款关于建立工厂，自动创建以及关于形状组合的游戏。玩家在游戏中需要交付符合要求的越来越复杂的形状，在游戏中不断进步，并解锁升级以加快你的工厂生产速度。游戏很轻松，只需建造工厂，布好设施，无需操作即能自动创造出各种各样的几何图形。\n"
+                             "操作指南\n"
+                             "按住鼠标左键拖动工具栏上的工具\n"
+                             "按住鼠标左键的同时按下键盘上的 \"R\" 键顺时针旋转工具\n"
+                             "鼠标右键删除工具");//此处在设计完之后添加游戏说明
 }
 
 
@@ -104,22 +107,22 @@ void MainWindow::initScene()
     setPalette(palette);
     // 创建开始游戏按钮
     QPushButton *startButton = new QPushButton("新游戏", this);
-    startButton->setGeometry(START_WIDTH * 0.5-75, START_HEIGHT*0.5, 150, 100);
+    startButton->setGeometry(START_WIDTH * 0.5-75, START_HEIGHT*0.5+50, 150, 70);
     connect(startButton, &QPushButton::clicked, this, &MainWindow::startGame);
 
     // 创建读取存档按钮
     QPushButton *loadButton = new QPushButton("继续游戏", this);
-    loadButton->setGeometry(START_WIDTH * 0.5-75, START_HEIGHT*0.5+70, 150, 100);
+    loadButton->setGeometry(START_WIDTH * 0.5-75, START_HEIGHT*0.5+120, 150, 70);
     connect(loadButton, &QPushButton::clicked, this, &MainWindow::loadGame);
 
     // 创建游戏说明按钮
     QPushButton *infoButton = new QPushButton("游戏说明", this);
-    infoButton->setGeometry(START_WIDTH*0.5-75, START_HEIGHT*0.5+140, 150, 100);
+    infoButton->setGeometry(START_WIDTH*0.5-75, START_HEIGHT*0.5+260, 150, 70);
     connect(infoButton, &QPushButton::clicked, this, &MainWindow::showGameInfo);
 
     // 创建商店按钮
     QPushButton *shopButton = new QPushButton("商店", this);
-    shopButton->setGeometry(START_WIDTH * 0.5 - 75, START_HEIGHT * 0.5 + 210, 150, 100);
+    shopButton->setGeometry(START_WIDTH * 0.5 - 75, START_HEIGHT * 0.5 + 190, 150, 70);
     connect(shopButton, &QPushButton::clicked, this, &MainWindow::openShop);
 }
 //void MainWindow::loadData() {   //读档
@@ -171,9 +174,7 @@ void MainWindow::saveData() {               //存档
     {
         qDebug() << "Unable to open the file for writing.";
     }
-    QString runPath = QCoreApplication::applicationDirPath() + "/player1.txt";
-    runPath.replace(QString("/"),QString("\\"));
-    qDebug() << runPath;
+
 }
 
 void MainWindow::newgameclean(){    //重置全局属性

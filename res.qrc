@@ -8,8 +8,6 @@
         <file>res/pic/buildings/1.png</file>
         <file>res/pic/buildings/2.png</file>
         <file>res/pic/buildings/4.png</file>
-        <file>res/pic/pieces/resource1.png</file>
-        <file>res/pic/pieces/resource2.png</file>
         <file>res/pic/pieces/1-0.png</file>
         <file>res/pic/pieces/2-2.png</file>
         <file>res/pic/buildings/0-3.png</file>
@@ -37,5 +35,8 @@
         <file>res/music/consumed.wav</file>
         <file>res/music/toolselect.wav</file>
         <file>res/music/tooldelete.wav</file>
+        <file>res/pic/pieces/resource1.png</file>
+        <file>res/pic/pieces/resource2.png</file>
+        <file>res/pic/pieces/res2.png</file>
     </qresource>
 </RCC>

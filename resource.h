@@ -2,7 +2,6 @@
 #define RESOURCE_H
 
 #include <QObject>
-#include "map.h"
 #include "global.h"
 #include <QPainter>
 class resource : public QObject

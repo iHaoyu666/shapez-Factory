@@ -5,7 +5,6 @@
 #include "extractortool.h"
 #include "trashtool.h"
 #include "translatortool.h"
-#include "map.h"
 #include <QTimer>
 #include <QDebug>
 #include <QMessageBox>
@@ -28,13 +27,14 @@ int toolbarY = GAME_HEIGHT - toolbarHeight - 20; // 距离底部一定的间距
 gamewindow::gamewindow(QWidget *parent)
     : QWidget(parent)
 {
-
+    //初始化背景音乐
     bgm=new QSoundEffect;
     bgm->setSource(QUrl::fromLocalFile(":/res/music/bgminwav.wav"));
     bgm->setLoopCount(10);  //循环次数
     bgm->setVolume(0.25f); //音量  0~1之间
     bgm->play();
 
+    //初始化音效
     selecttool =new QSoundEffect;
     selecttool->setSource(QUrl::fromLocalFile(":/res/music/toolselect.wav"));
     selecttool->setLoopCount(1);  //循环次数
@@ -50,22 +50,29 @@ gamewindow::gamewindow(QWidget *parent)
     toolputdown->setLoopCount(1);  //循环次数
     toolputdown->setVolume(0.2f); //音量  0~1之间
 
+    //初始化窗口属性
     setFixedSize(GAME_WIDTH,GAME_HEIGHT);
     setWindowTitle(GAME_TITLE);
     setMouseTracking(true);
 
+    //添加返回主菜单按钮
     QPushButton *backButton = new QPushButton("返回主菜单",this); //返回按钮
     backButton->setGeometry(0,GAME_HEIGHT-60,120,50);
     backButton->show();
     connect(backButton, &QPushButton::clicked, this, &gamewindow::askforclose);
-    QPainter painter(this);
 
+    QPainter painter(this);
+    //初始化刷新计时器
     refreshTimer = new QTimer(this);
-    refreshTimer->start(50);  // 设置刷新间隔，单位为毫秒
+    refreshTimer->start(50);
+    //初始化开采计时器
     generateTimer= new QTimer(this);
     generateTimer->start(miningRate);//生成资源速度
+    //初始化移动计时器
     moveTimer=new QTimer(this);
     moveTimer->start(moveInterval);
+
+    //设置移动信号
     connect(moveTimer, &QTimer::timeout, this, [&](){
     //更新资源
         for (auto res: resources){
@@ -79,6 +86,7 @@ gamewindow::gamewindow(QWidget *parent)
         }
     });
 
+    //设置生成资源
     connect(generateTimer, &QTimer::timeout, this, [&]{
         for (const auto& element : qAsConst(miningElements)) {
             // 获取位置、种类和方向信息
@@ -95,8 +103,8 @@ gamewindow::gamewindow(QWidget *parent)
         }
     });
     task->nextTask();//初始化任务
+    //刷新时间到则重新Paint
     connect(refreshTimer, &QTimer::timeout, this, QOverload<>::of(&gamewindow::update));
-
 
     //三个速率标签
     miningRateLabel->setText("开采间隔秒数: " + QString::number(miningRate/1000.0));
@@ -106,34 +114,33 @@ gamewindow::gamewindow(QWidget *parent)
     movingRateLabel->setText("移动速率: " + QString::number(movingRate));
     movingRateLabel->move(GAME_WIDTH-3*GRID_SIZE, GAME_HEIGHT-3*GRID_SIZE);
     //金钱标签
-    moneyLable->setGeometry(20, 40, 200, 50);
+    moneyLable->setGeometry(20, 40, 500, 50);
     moneyLable->setFont(QFont("黑体", 20));
     moneyLable->setText(QString("金币：%1").arg(money));
+
     //交付数量标签
-    centerLable->setGeometry(GAME_WIDTH-5*GRID_SIZE, GRID_SIZE,300,30);
+    centerLable->setGeometry(GAME_WIDTH-5*GRID_SIZE, GRID_SIZE,500,30);
     centerLable->setFont(QFont("黑体", 10));
     centerLable->setText(QString("已交付数量:%1").arg(donePieces));
     centerLable->setStyleSheet("background-color: transparent;");
 
-    resource1Lable->setGeometry(GAME_WIDTH-5*GRID_SIZE, GRID_SIZE+20,300,30);
+    resource1Lable->setGeometry(GAME_WIDTH-5*GRID_SIZE, GRID_SIZE+20,500,30);
     resource1Lable->setFont(QFont("黑体", 10));
     resource1Lable->setText(QString("圆形未交付数量：%1").arg(resource1Needed));
     resource1Lable->setStyleSheet("background-color: transparent;");
 
-    resource2Lable->setGeometry(GAME_WIDTH-5*GRID_SIZE, GRID_SIZE+40,300,30);
+    resource2Lable->setGeometry(GAME_WIDTH-5*GRID_SIZE, GRID_SIZE+40,500,30);
     resource2Lable->setFont(QFont("黑体", 10));
     resource2Lable->setText(QString("方形未交付数量：%1").arg(resource2Needed));
     resource2Lable->setStyleSheet("background-color: transparent;");
 
-    resource1clipLable->setGeometry(GAME_WIDTH-5*GRID_SIZE, GRID_SIZE+60,300,30);
+    resource1clipLable->setGeometry(GAME_WIDTH-5*GRID_SIZE, GRID_SIZE+60,500,30);
     resource1clipLable->setFont(QFont("黑体", 10));
     resource1clipLable->setText(QString("半圆未交付数量：%1").arg(resource1clipNeeded));
     resource1clipLable->setStyleSheet("background-color: transparent;");
 
-    donePieces=0;
-
     doneLabel->setFont(QFont("黑体", 10));
-    doneLabel->setGeometry(GAME_WIDTH-5*GRID_SIZE, GRID_SIZE+80, 300, 30);
+    doneLabel->setGeometry(GAME_WIDTH-5*GRID_SIZE, GRID_SIZE+80, 500, 30);
     doneLabel->setText(QString("共交付数量：%1").arg(donePieces));
     doneLabel->setStyleSheet("background-color: transparent;");
 
@@ -143,6 +150,21 @@ gamewindow::gamewindow(QWidget *parent)
     connect(enhancementHub, &EnhancementHub::miningRateIncreased, this, &gamewindow::increaseMiningRate);
     connect(enhancementHub, &EnhancementHub::conveyorRateIncreased, this, &gamewindow::increaseConveyorRate);
     connect(enhancementHub, &EnhancementHub::cuttingRateIncreased, this, &gamewindow::increaseCuttingRate);
+
+
+    for (int y = 0; y < mapHeight; ++y) {
+        for (int x = 0; x < mapWidth; ++x) {
+            int resourceCode = Map[y][x];
+            if (resourceCode == 1){
+                Tool* newtool = new TranslatorTool(x*GRID_SIZE, y* GRID_SIZE,0);
+                tools.push_back(newtool);
+            }else if (resourceCode!=0&&resourceCode%90==0){
+                Tool* newtool = new TranslatorTool(x*GRID_SIZE, y* GRID_SIZE,resourceCode);
+                tools.push_back(newtool);
+            }
+            // 可以根据其他资源代码添加更多的绘制逻辑
+        }
+    }
 }
 
 void gamewindow::paintEvent(QPaintEvent* event) {
@@ -227,7 +249,6 @@ void gamewindow::generateResource(int kind, int x, int y, int angle) {
         resources.push_back(newResource);
     });
 
-    // 将新资源添加到资源列表
     }
 
 //void addCornerConveyor(const std::vector<std::pair<int, int>>& path, int cornerX, int cornerY) {
@@ -371,7 +392,7 @@ void gamewindow::drawresource(QPainter& painter){
             } else if (resourceCode == -2||resourceCode == -4) {
                 // 绘制可开采矿物2的图片资源
                 QPixmap resourcePixmap(":/res/pic/pieces/resource2.png");  // 根据实际的图片路径和名称进行修改
-                QRect rect(x * GRID_SIZE+0.25* GRID_SIZE, y * GRID_SIZE+ 0.25*GRID_SIZE, 0.5* GRID_SIZE, 0.5*GRID_SIZE);
+                QRect rect(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE);
                 painter.drawPixmap(rect, resourcePixmap);
             }
             // 可以根据其他资源代码添加更多的绘制逻辑
@@ -621,9 +642,9 @@ void gamewindow::askforclose(){
     if (reply == QMessageBox::Yes) {
         for(Tool* tool:tools){
             switch(tool->getType()){
-            case ToolType::Conveyor:
-                Map[tool->getGridPos().y()][tool->getGridPos().x()]=0;
-                break;
+//            case ToolType::Conveyor:
+//                Map[tool->getGridPos().y()][tool->getGridPos().x()]=0;
+//                break;
             case ToolType::Cutter:
                 Map[tool->getGridPos().y()][tool->getGridPos().x()]=0;
                 if(tool->getRotation()==0){
@@ -668,6 +689,8 @@ void gamewindow::askforclose(){
             case ToolType::RotateTool:
                 Map[tool->getGridPos().y()][tool->getGridPos().x()]=0;
                 break;
+            default:
+                break;
             }
 
 
@@ -677,7 +700,7 @@ void gamewindow::askforclose(){
         for(resource* res:resources){
             delete res;
         }
-
+        delete bgm;
         emit windowclose();
         this->deleteLater();
     }

@@ -6,7 +6,7 @@ void resource::draw(QPainter &painter){
         return;
     }
     QPixmap resource1Image(":/res/pic/pieces/circle1.png");
-    QPixmap resource2Image(":/res/pic/pieces/resource2.png");
+    QPixmap resource2Image(":/res/pic/pieces/res2.png");
     QPixmap resource1clipImage1(":/res/pic/pieces/circle1uphalf.png");
     QPixmap resource1clipImage2(":/res/pic/pieces/circle1downhalf.png");
     QPixmap resource1clipImage3(":/res/pic/pieces/circle1lefthalf.png");
