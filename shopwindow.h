@@ -5,7 +5,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QSoundEffect>
-class ShopWindow : public QMainWindow
+class ShopWindow : public QMainWindow       //商店
 {
     Q_OBJECT
 public:

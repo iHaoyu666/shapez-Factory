@@ -5,7 +5,7 @@ Task::Task(QObject *parent)
 {
 
 }
-void Task::nextTask(){
+void Task::nextTask(){//下一个任务
     if (count==0){
         clean();
         resource1Needed=20;
@@ -26,7 +26,7 @@ void Task::nextTask(){
     }
 
 }
-void Task::clean(){
+void Task::clean(){ //重置任务
     resource1Needed=0;
     resource2Needed=0;
     resource1clipNeeded=0;

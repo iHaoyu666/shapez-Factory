@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include "tool.h"
-class StackTool : public Tool
+class StackTool : public Tool       //堆叠器
 {
 
 public:

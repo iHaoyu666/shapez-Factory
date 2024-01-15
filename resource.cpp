@@ -2,7 +2,7 @@
 #include <QDebug>
 #include <cmath>
 void resource::draw(QPainter &painter){
-    if (state==0||state==2){
+    if (state==0||state==2){        //如果隐藏
         return;
     }
     QPixmap resource1Image(":/res/pic/pieces/circle1.png");
@@ -27,27 +27,23 @@ void resource::draw(QPainter &painter){
                 pixmap = &resource1clipImage3;
                 size=QSize(0.25*GRID_SIZE, 0.5*GRID_SIZE);
                 pixNum=3;
-//                painter.drawPixmap(currentX-0.25*GRID_SIZE, currentY-0.25*GRID_SIZE, 0.25*GRID_SIZE, 0.5*GRID_SIZE, resource1clipImage3);
                 break;
             case 90: // 向右
                 pixmap = &resource1clipImage1;
                 size=QSize(0.5*GRID_SIZE, 0.25*GRID_SIZE);
                 pixNum=1;
-//                painter.drawPixmap(currentX-0.25*GRID_SIZE, currentY-0.25*GRID_SIZE, 0.5*GRID_SIZE, 0.25*GRID_SIZE, resource1clipImage1);
                 break;
             case 180:  //向下
                 pixmap = &resource1clipImage4;
                 size=QSize(0.25*GRID_SIZE, 0.5*GRID_SIZE);
                 pixNum=4;
 
-//                painter.drawPixmap(currentX, currentY-0.25*GRID_SIZE, 0.25*GRID_SIZE, 0.5*GRID_SIZE, resource1clipImage4);
                 break;
             case 270:  //向左
                 pixmap = &resource1clipImage2;
                 size=QSize(0.5*GRID_SIZE, 0.25*GRID_SIZE);
                 pixNum=2;
 
-//                painter.drawPixmap(currentX-0.25*GRID_SIZE, currentY, 0.5*GRID_SIZE, 0.25*GRID_SIZE, resource1clipImage2);
                 break;
             default:
                 break;
@@ -85,25 +81,21 @@ void resource::draw(QPainter &painter){
                 pixmap = &resource1clipImage4;
                 size=QSize(0.25*GRID_SIZE, 0.5*GRID_SIZE);
                 pixNum=4;
-                //                painter.drawPixmap(currentX-0.25*GRID_SIZE, currentY-0.25*GRID_SIZE, 0.25*GRID_SIZE, 0.5*GRID_SIZE, resource1clipImage3);
                 break;
             case 90: // 向右
                 pixmap = &resource1clipImage2;
                 size=QSize(0.5*GRID_SIZE, 0.25*GRID_SIZE);
                 pixNum=2;
-                //                painter.drawPixmap(currentX-0.25*GRID_SIZE, currentY-0.25*GRID_SIZE, 0.5*GRID_SIZE, 0.25*GRID_SIZE, resource1clipImage1);
                 break;
             case 180:  //向下
                 pixmap = &resource1clipImage3;
                 size=QSize(0.25*GRID_SIZE, 0.5*GRID_SIZE);
                 pixNum=3;
-                //                painter.drawPixmap(currentX, currentY-0.25*GRID_SIZE, 0.25*GRID_SIZE, 0.5*GRID_SIZE, resource1clipImage4);
                 break;
             case 270:  //向左
                 pixmap = &resource1clipImage1;
                 size=QSize(0.5*GRID_SIZE, 0.25*GRID_SIZE);
                 pixNum=1;
-                //                painter.drawPixmap(currentX-0.25*GRID_SIZE, currentY, 0.5*GRID_SIZE, 0.25*GRID_SIZE, resource1clipImage2);
                 break;
             default:
                 break;
@@ -237,9 +229,7 @@ void resource::moveWithConveyor(double _rate, double cuttingRate)//int direction
         currentX=nextX;
         currentY=nextY;
     }
-//    else if(direction<360&&(Map[nextY/GRID_SIZE][nextX/GRID_SIZE]!=direction&&Map[nextY/GRID_SIZE][nextX/GRID_SIZE]!=(direction+1))){
 
-//    }
     else if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == 1||Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == 90||Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == 180||Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == 270)//代表0-270度
     {
         rotateFlag=0;
@@ -376,11 +366,7 @@ void resource::moveWithConveyor(double _rate, double cuttingRate)//int direction
                 break;
             }
         }
-//        resource* newResource = new resource(this); // 创建新资源对象
-//        newResource->moveWithConveyor(direction); // 设置新资源的速率和方向
-//        emit resourceGenerated(newResource); // 发送资源生成信号
 
-        // 更新地图，将新资源放置在下一个位置
 
     }
     else if (Map[nextY/GRID_SIZE][nextX/GRID_SIZE] == 5&&kind==4)//下一个位置剪切器没用的口 但是是被剪切的来了
@@ -477,7 +463,7 @@ void resource::moveWithConveyor(double _rate, double cuttingRate)//int direction
 
 }
 
-bool resource::match1(int dir, int next){
+bool resource::match1(int dir, int next){       //两个匹配函数 简化方法
     if((dir==360||dir==630)&&next!=90){
         return false;
     }

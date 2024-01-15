@@ -78,9 +78,6 @@ void TranslatorTool::draw(QPainter& painter){
         break;
     }
 
-    // 在绘图设备上绘制剪切器的图片
-
-    // 在绘图设备上绘制剪切器的图片
 
     painter.restore();  // 恢复之前的绘图状态
 }

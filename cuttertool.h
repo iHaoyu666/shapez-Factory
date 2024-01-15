@@ -2,7 +2,7 @@
 #define CUTTERTOOL_H
 #include "tool.h"
 #include <QKeyEvent>
-class cutterTool: public Tool
+class cutterTool: public Tool           //剪切器类
 {
     QPoint rubbishPos;
 public:

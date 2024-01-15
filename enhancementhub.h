@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QWidget>
 #include <QPushButton>
-class EnhancementHub : public QMainWindow
+class EnhancementHub : public QMainWindow       //局部强化中心类
 {
     Q_OBJECT
 public:

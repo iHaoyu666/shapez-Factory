@@ -34,7 +34,7 @@ public slots:
 
     void showGameInfo();
 
-    void openShop();
+    void openShop();        //打开商店
 
     void saveData();    //保存游戏
 

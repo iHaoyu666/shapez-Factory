@@ -59,7 +59,7 @@ else()
             global.h global.cpp
             task.h task.cpp
             shopwindow.h shopwindow.cpp
-            gamedata.h gamedata.cpp
+
             stacktool.h stacktool.cpp
             rotatetool.h rotatetool.cpp
 

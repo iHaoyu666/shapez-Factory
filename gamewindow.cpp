@@ -117,7 +117,7 @@ gamewindow::gamewindow(QWidget *parent)
     moneyLable->setGeometry(20, 40, 500, 50);
     moneyLable->setFont(QFont("黑体", 20));
     moneyLable->setText(QString("金币：%1").arg(money));
-
+    moneyLable->setStyleSheet("background-color: transparent;");
     //交付数量标签
     centerLable->setGeometry(GAME_WIDTH-5*GRID_SIZE, GRID_SIZE,500,30);
     centerLable->setFont(QFont("黑体", 10));
@@ -221,61 +221,6 @@ void gamewindow::generateResource(int kind, int x, int y, int angle) {
 
     }
 
-//void addCornerConveyor(const std::vector<std::pair<int, int>>& path, int cornerX, int cornerY) {
-//    // 根据拐点的坐标和路径中的前一个格子坐标判断拐弯的方向
-//    int prevX = path.back().first;
-//    int prevY = path.back().second;
-//    int direction = getConveyorDirection(prevX, prevY, cornerX, cornerY);
-
-//    // 在拐点处放置拐弯传送带
-//    Map[cornerY][cornerX] = getConveyorType(direction);
-//}
-
-//void placeConveyorOnPath(const std::vector<std::pair<int, int>>& path) {
-//    // 在路径上的每个格子上放置传送带
-//    for (const auto& point : path) {
-//        int x = point.first;
-//        int y = point.second;
-//        Map[y][x] = getConveyorType(Direction::Straight); // 假设放置直行传送带，您可以根据需求进行调整
-//    }
-//}
-
-//int getConveyorDirection(int startX, int startY, int endX, int endY) {
-//    // 根据起点和终点坐标计算传送带的方向
-//    if (startX == endX) {
-//        if (startY < endY) {
-//            return Direction::Down; // 向下
-//        } else {
-//            return Direction::Up; // 向上
-//        }
-//    } else if (startY == endY) {
-//        if (startX < endX) {
-//            return Direction::Right; // 向右
-//        } else {
-//            return Direction::Left; // 向左
-//        }
-//    } else {
-//        // 处理其他情况，如拐角传送带
-//        // 根据需要进行实现
-//    }
-//}
-
-//int getConveyorType(int direction) {
-//    // 根据传送带的方向返回对应的传送带类型
-//    switch (direction) {
-//    case Direction::Up:
-//        return ConveyorType::Up;
-//    case Direction::Down:
-//        return ConveyorType::Down;
-//    case Direction::Left:
-//        return ConveyorType::Left;
-//    case Direction::Right:
-//        return ConveyorType::Right;
-//    // 处理其他传送带类型
-//    default:
-//        return ConveyorType::Straight;
-//    }
-//}
 void gamewindow::drawMap(QPainter& painter){
     // 设置背景颜色为浅灰色
     this->setStyleSheet("background-color: rgb(240, 240, 240);");
@@ -371,7 +316,7 @@ void gamewindow::drawresource(QPainter& painter){
 
 }
 
-void gamewindow::addTool(Tool* tool, int x, int y) {
+void gamewindow::addTool(Tool* tool, int x, int y) {    //添加工具
     if(tool->getType()!=ToolType::Excavator && Map[y/GRID_SIZE][x/GRID_SIZE]<0){
         return;
     }
@@ -445,7 +390,7 @@ void gamewindow::addTool(Tool* tool, int x, int y) {
     }
     // 根据工具类型、位置和方向，执行相应操作
 }
-void gamewindow::removeTool(int x, int y) {
+void gamewindow::removeTool(int x, int y) {     //移除工具
     for (auto it = tools.begin(); it != tools.end(); ++it) {
         Tool* tool = *it;
         if (QPoint(tool->getPosition().x()/GRID_SIZE, tool->getPosition().y()/GRID_SIZE) == QPoint(x/GRID_SIZE, y/GRID_SIZE)) {
@@ -478,7 +423,7 @@ void gamewindow::removeTool(int x, int y) {
         }
     }
 }
-void gamewindow::removeresource(resource* res){
+void gamewindow::removeresource(resource* res){     //移除资源
     auto it = std::find(resources.begin(), resources.end(), res);
 
     // 如果找到了指针，则删除它
@@ -486,9 +431,9 @@ void gamewindow::removeresource(resource* res){
         resources.erase(it);
     }
 }
-bool gamewindow::hasTool(int x, int y) const {
+bool gamewindow::hasTool(int x, int y) const {      //判断是否有工具在此处
     for (Tool* tool : tools) {
-        if (QPoint(tool->getPosition().x()/GRID_SIZE, tool->getPosition().y()/GRID_SIZE) == QPoint(x/GRID_SIZE, y/GRID_SIZE)||Map[y/GRID_SIZE][x/GRID_SIZE]==5) {
+        if (QPoint(tool->getPosition().x()/GRID_SIZE, tool->getPosition().y()/GRID_SIZE) == QPoint(x/GRID_SIZE, y/GRID_SIZE)||Map[y/GRID_SIZE][x/GRID_SIZE]==5||Map[y/GRID_SIZE][x/GRID_SIZE]==7) {
             return true;
         }
     }
@@ -528,7 +473,7 @@ void gamewindow::mousePressEvent(QMouseEvent *event) {
                 selectedTool = new ExtractorTool(mouseX, mouseY, 0);
             } else if (mouseX >= tool3Pos.x() && mouseX <= tool3Pos.x() + toolSize) {
                 selectedTool = new TrashTool(mouseX, mouseY, 0);
-            }else if (mouseX >= tool4Pos.x() && mouseX <= tool4Pos.x() + toolSize) {
+            }else if (mouseX >= tool4Pos.x() && mouseX <= tool4Pos.x() + toolSize * 2) {
                 selectedTool = new StackTool(mouseX, mouseY, 0);
             }
             else if (mouseX >= tool5Pos.x() && mouseX <= tool5Pos.x() + toolSize) {
@@ -619,7 +564,7 @@ void gamewindow::askforclose(){
     // 显示询问对话框
     QMessageBox::StandardButton reply = QMessageBox::question(nullptr, "提醒", "你确定要返回主菜单吗？你的局部属性将重置，但你的金币将保留", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
     // 根据用户选择来决定是否关闭窗口
-    if (reply == QMessageBox::Yes) {
+    if (reply == QMessageBox::Yes) {        //决定关闭后 开始善后工作 这里相当于做析构函数
         for(Tool* tool:tools){
             switch(tool->getType()){
 //            case ToolType::Conveyor:
@@ -677,7 +622,7 @@ void gamewindow::askforclose(){
             delete tool;
 
         }
-        for(resource* res:resources){
+        for(resource* res:resources){       //归还资源
             delete res;
         }
         delete bgm;
@@ -685,9 +630,4 @@ void gamewindow::askforclose(){
         this->deleteLater();
     }
 
-
 }
-//gamewindow::~gamewindow(){
-
-
-//}

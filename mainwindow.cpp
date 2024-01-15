@@ -125,24 +125,6 @@ void MainWindow::initScene()
     shopButton->setGeometry(START_WIDTH * 0.5 - 75, START_HEIGHT * 0.5 + 190, 150, 70);
     connect(shopButton, &QPushButton::clicked, this, &MainWindow::openShop);
 }
-//void MainWindow::loadData() {   //读档
-//    QString filePath="player1.txt";
-//    QFile file(filePath);
-//    if (file.open(QIODevice::ReadOnly)) {
-//        QDataStream stream(&file);
-//        for (int i = 0; i < mapHeight; ++i) {
-//            for (int j = 0; j < mapWidth; ++j) {
-//                stream >> Map[i][j];
-//            }
-//        }
-//        stream >> gold;
-//        stream >> goldReward;
-//        stream >> deliveryCenterLevel;
-//        stream >> miningSiteLevel;
-//        file.close();
-//    }
-//}
-
 
 void MainWindow::saveData() {               //存档
 
